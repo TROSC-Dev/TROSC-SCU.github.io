@@ -16,19 +16,17 @@ interface TimeLeft {
 
 const upcomingEventsData: UpcomingEvent[] = [
   {
-    title: 'Sandbox Festival',
-    location: 'El Gouna, Egypt',
-    date: '2026-06-15T12:00:00Z',
-  },
-  {
     title: 'Cairo International Book Fair',
     location: 'Cairo, Egypt',
     date: '2027-01-22T10:00:00Z',
   },
+  {
+    title: 'Sandbox Festival',
+    location: 'El Gouna, Egypt',
+    date: '2026-06-15T12:00:00Z',
+  },
 ];
 
-// --- Countdown COMPONENT ---
-// A reusable hook-based component to handle the countdown logic.
 const Countdown: React.FC<{ targetDate: string }> = ({ targetDate }) => {
   const calculateTimeLeft = (): TimeLeft => {
     const difference = +new Date(targetDate) - +new Date();
@@ -54,7 +52,6 @@ const Countdown: React.FC<{ targetDate: string }> = ({ targetDate }) => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
 
-    // Clear the timeout if the component is unmounted
     return () => clearTimeout(timer);
   });
 
@@ -64,49 +61,47 @@ const Countdown: React.FC<{ targetDate: string }> = ({ targetDate }) => {
   if (timeLeft.days && timeLeft.days > 0) timerComponents.push(`${timeLeft.days} day${timeLeft.days > 1 ? 's' : ''}`);
   if (timeLeft.hours && timeLeft.hours > 0) timerComponents.push(`${timeLeft.hours} hour${timeLeft.hours > 1 ? 's' : ''}`);
   if (timeLeft.minutes && timeLeft.minutes > 0) timerComponents.push(`${timeLeft.minutes} minute${timeLeft.minutes > 1 ? 's' : ''}`);
-  
-  // Format the countdown string
+
   let countdownString = 'only ';
-  if(timerComponents.length > 1) {
+  if (timerComponents.length > 1) {
     countdownString += timerComponents.slice(0, -1).join(', ') + ', and ' + timerComponents.slice(-1);
   } else {
     countdownString += timerComponents[0];
   }
   countdownString += ' to go..';
 
-
   return (
-    <span className="text-sm text-gray-800">
+    <span className="text-sm text-gray-500">
       {timerComponents.length ? countdownString : "Time's up!"}
     </span>
   );
 };
 
-
-// --- UpcomingEventCard COMPONENT ---
 const UpcomingEventCard: React.FC<{ event: UpcomingEvent }> = ({ event }) => {
   return (
-    <div className="bg-red-300/80 rounded-2xl p-6 flex justify-between items-center transition-transform hover:scale-[1.03] duration-300">
+    <div className="bg-white rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm border border-gray-200">
       <div>
-        <h3 className="text-xl font-bold text-gray-900">{event.title} – {event.location}</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-1">{event.title} – {event.location}</h3>
         <Countdown targetDate={event.date} />
       </div>
-      <button className="bg-red-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-red-700 transition-colors shadow-lg">
+      <button className="bg-[#D41132] text-white font-bold py-2.5 px-8 rounded-full hover:bg-[#b30e2a] transition-colors shadow-md whitespace-nowrap">
         Enroll Now
       </button>
     </div>
   );
 };
 
-
-// --- MAIN App COMPONENT ---
 const UpcomingEvents: React.FC = () => {
   return (
-    <div className="w-full font-sans py-16 px-8">
-      <div className="w-full max-w-6xl mx-auto text-center">
-        <h2 className="text-4xl font-bold text-white mb-2">Upcoming Events</h2>
-        <p className="text-lg text-gray-300 mb-12 italic">"We're preparing something awesome for you!"</p>
-        
+    <div className="w-full font-sans py-16 px-8 bg-white">
+      <div className="w-full max-w-4xl mx-auto text-center">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2" style={{ fontFamily: "'Georgia', serif" }}>
+          Upcoming Events
+        </h2>
+        <p className="text-lg text-gray-600 mb-12 italic" style={{ fontFamily: "'Georgia', serif" }}>
+          "We're preparing something awesome for you!"
+        </p>
+
         <div className="space-y-6">
           {upcomingEventsData.map((event, index) => (
             <UpcomingEventCard key={index} event={event} />

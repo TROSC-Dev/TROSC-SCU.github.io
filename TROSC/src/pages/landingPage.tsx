@@ -8,18 +8,18 @@ import Footer from './../components/Footer';
 
 function LandingPage() {
     return (
-    <div className="min-h-screen bg-gradient-to-br from-[#190A05] to-[#7E0101]">
-        <Navbar />   
-        <WhoWeAre />
-        <Divider />
-        <Tracks />
-        <Divider />
-        <Events />
-        <Divider />
-        <UpcomingEvents />
-        <Divider />
-        <Footer />
-    </div>
+        <div className="min-h-screen bg-white">
+            <Navbar />
+            <WhoWeAre />
+            <Divider />
+            <Tracks />
+            <Divider />
+            <Events />
+            <Divider />
+            <UpcomingEvents />
+            <Divider />
+            <Footer />
+        </div>
     )
 }
 export default LandingPage;
