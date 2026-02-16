@@ -1,4 +1,5 @@
 import React from 'react';
+import TrackCard from '../components/trackCard';
 
 interface Track {
   imageUrl: string;
@@ -24,33 +25,9 @@ const tracksData: Track[] = [
   },
 ];
 
-const TrackCard: React.FC<{ track: Track }> = ({ track }) => {
-  return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
-      <img
-        src={track.imageUrl}
-        alt={track.title}
-        className="w-full h-48 object-cover"
-        onError={(e) => {
-          const target = e.target as HTMLImageElement;
-          target.onerror = null;
-          target.src = 'https://placehold.co/600x400/1a0e0e/ffffff?text=Image+Not+Found';
-        }}
-      />
-      <div className="p-5">
-        <h3 className="text-lg font-bold text-gray-900 mb-2">{track.title}</h3>
-        <p className="text-gray-600 text-sm mb-4 leading-relaxed">{track.description}</p>
-        <a href="#" className="text-primary-dark font-semibold text-sm hover:underline">
-          View track
-        </a>
-      </div>
-    </div>
-  );
-};
-
 const Tracks: React.FC = () => {
   return (
-    <div id='tracks' className="bg-gray-50 px-6 py-16 w-full flex items-center justify-center font-sans">
+    <div id='tracks' className="bg-white px-6 py-16 w-full flex items-center justify-center font-sans">
       <div className="w-full max-w-6xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 text-center mb-12" style={{ fontFamily: "'Georgia', serif" }}>
           Our Tracks
@@ -63,7 +40,7 @@ const Tracks: React.FC = () => {
         </div>
 
         <div className="text-center">
-          <button className="py-3 px-10 bg-primary-dark text-white font-semibold rounded-full hover:bg-primary-dark-hover transition-colors duration-300 shadow-md">
+          <button className="py-3 px-10 bg-primary text-white font-semibold rounded-full hover:bg-primary-hover transition-colors duration-300 shadow-md">
             See All  Tracks
           </button>
         </div>

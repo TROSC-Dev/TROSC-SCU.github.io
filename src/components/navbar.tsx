@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+// import { User } from 'lucide-react';
 import TroscLogo from '../../Assests/TroscLogoRed.png';
 import { useSmoothScroll } from '../hooks/useSmoothScroll';
 
@@ -56,17 +57,17 @@ const Navbar: React.FC = () => {
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <a href="pages/signUpPage.tsx" onClick={(e) => handleNavClick(e)} className="inline-block bg-primary text-white font-bold text-base py-2 px-2.5 rounded-md hover:bg-primary-hover transition-colors duration-300 shadow-lg cursor-pointer">
-              Sign Up
+            <a href="pages/logInPage.tsx" onClick={(e) => handleNavClick(e)} className="inline-block bg-primary text-white font-bold text-base py-2.5 px-2.5 rounded-md hover:bg-primary-hover transition-colors duration-300 shadow-lg cursor-pointer">
+              Log In
             </a>
             {/* menu button */}
             {/* <button className="hidden md:block text-gray-600 hover:text-gray-900 transition-colors">
               <Menu size={24} />
             </button> */}
             {/* user button */}
-            <button className="text-gray-600 hover:text-gray-900 transition-colors">
+            {/* <button className="text-gray-600 hover:text-gray-900 transition-colors">
               <User size={24} />
-            </button>
+            </button> */}
             <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-gray-600 hover:text-gray-900 transition-colors duration-300" aria-label={isOpen ? 'Close menu' : 'Open menu'}>
               {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>

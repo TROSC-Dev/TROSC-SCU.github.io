@@ -11,7 +11,6 @@ interface TimeLeft {
   days?: number;
   hours?: number;
   minutes?: number;
-  seconds?: number;
 }
 
 const upcomingEventsData: UpcomingEvent[] = [
@@ -28,7 +27,7 @@ const upcomingEventsData: UpcomingEvent[] = [
 ];
 
 const Countdown: React.FC<{ targetDate: string }> = ({ targetDate }) => {
-  const calculateTimeLeft = (): TimeLeft => {
+  const calculateTimeLeft = React.useCallback((): TimeLeft => {
     const difference = +new Date(targetDate) - +new Date();
     let timeLeft: TimeLeft = {};
 
@@ -39,21 +38,20 @@ const Countdown: React.FC<{ targetDate: string }> = ({ targetDate }) => {
         days: totalDays % 30,
         hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
         minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
       };
     }
     return timeLeft;
-  };
+  }, [targetDate]);
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
 
-    return () => clearTimeout(timer);
-  });
+    return () => clearInterval(timer);
+  }, [calculateTimeLeft]);
 
   const timerComponents: string[] = [];
 
@@ -64,51 +62,53 @@ const Countdown: React.FC<{ targetDate: string }> = ({ targetDate }) => {
 
   let countdownString = 'only ';
   if (timerComponents.length > 1) {
-    countdownString += timerComponents.slice(0, -1).join(', ') + ', and ' + timerComponents.slice(-1);
-  } else {
+    countdownString += `${timerComponents.slice(0, -1).join(', ')}, and ${timerComponents.slice(-1)}`;
+  } else if (timerComponents.length === 1) {
     countdownString += timerComponents[0];
+  } else {
+    countdownString += 'less than a minute';
   }
-  countdownString += ' to go..';
+  countdownString += ' to go.';
 
   return (
-    <span className="text-sm text-gray-500">
-      {timerComponents.length ? countdownString : "Time's up!"}
+    <span className="text-xs text-neutral-dark">
+      {Object.keys(timeLeft).length ? countdownString : "Time's up!"}
     </span>
   );
 };
 
 const UpcomingEventCard: React.FC<{ event: UpcomingEvent }> = ({ event }) => {
   return (
-    <div className="bg-white rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm border border-gray-200">
-      <div>
-        <h3 className="text-lg font-bold text-gray-900 mb-1">{event.title} – {event.location}</h3>
+    <article className="flex flex-col items-start justify-between gap-4 rounded-2xl border border-neutral-light-active bg-white px-5 py-5 shadow-[0_4px_16px_rgba(0,0,0,0.12)] sm:flex-row sm:items-center sm:px-6">
+      <div className="text-left">
+        <h3 className="mb-1 text-lg font-bold text-neutral-darker md:text-xl">{event.title} - {event.location}</h3>
         <Countdown targetDate={event.date} />
       </div>
-      <button className="bg-primary-dark text-white font-bold py-2.5 px-8 rounded-full hover:bg-primary-dark-hover transition-colors shadow-md whitespace-nowrap">
+      <button className="whitespace-nowrap rounded-full bg-primary px-7 py-2.5 text-base font-bold text-white transition-colors hover:bg-primary-hover">
         Enroll Now
       </button>
-    </div>
+    </article>
   );
 };
 
 const UpcomingEvents: React.FC = () => {
   return (
-    <div className="w-full font-sans py-16 px-8 bg-white">
-      <div className="w-full max-w-4xl mx-auto text-center">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2" style={{ fontFamily: "'Georgia', serif" }}>
+    <section className="w-full bg-white px-6 pb-16 pt-10 font-family-poppins">
+      <div className="mx-auto w-full max-w-5xl text-center">
+        <h2 className="mb-3 text-4xl font-extrabold text-primary-darker">
           Upcoming Events
         </h2>
-        <p className="text-lg text-gray-600 mb-12 italic" style={{ fontFamily: "'Georgia', serif" }}>
+        <p className="mb-10 text-2xl font-semibold text-primary-darker">
           "We're preparing something awesome for you!"
         </p>
 
-        <div className="space-y-6">
+        <div className="space-y-5">
           {upcomingEventsData.map((event, index) => (
             <UpcomingEventCard key={index} event={event} />
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

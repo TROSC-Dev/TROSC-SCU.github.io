@@ -1,4 +1,4 @@
-import Navbar from "../components/navbar";
+import Navbar from "../components/Navbar";
 import WhoWeAre from "../components/WhoWeAre";
 import Divider from "../components/Divider";
 import Tracks from './../components/Tracks';
@@ -15,7 +15,6 @@ function LandingPage() {
             <Tracks />
             <Divider />
             <Events />
-            <Divider />
             <UpcomingEvents />
             <Divider />
             <Footer />

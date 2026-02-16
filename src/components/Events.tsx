@@ -1,65 +1,71 @@
 import React from 'react';
+import EventOneImage from '../../Assests/teamwork2.jpg';
+import EventTwoImage from '../../Assests/teamwork.jpg';
 
 interface Event {
   title: string;
   description: string;
   imageUrl: string;
+  alt: string;
 }
 
 const eventsData: Event[] = [
   {
     title: 'Trosc - lama cat event 2024',
-    description: 'an exciting gathering for tech enthusiasts and creative minds!\nJoin inspiring workshops, hands-on sessions, and interactive talks across multiple tracks.\nConnect with experts, level up your skills, and explore innovative projects.',
-    imageUrl: 'https://placehold.co/500x350/1a0e0e/ffffff?text=Event+1&font=raleway',
+    description:
+      'an exciting gathering for tech enthusiasts and creative minds!\nJoin inspiring workshops, hands-on sessions, and interactive talks across multiple tracks.\nConnect with experts, level up your skills, and explore innovative projects.',
+    imageUrl: EventOneImage,
+    alt: 'Trosc members at Lama Cat event',
   },
   {
-    title: 'Somabay Endurance Festival –\nSomabay, Egypt',
-    description: 'With endurance challenges like running and cycling, this festival represents persistence and pushing boundaries. Trosc members would have related this energy to mastering difficult tracks and staying committed to learning.',
-    imageUrl: 'https://placehold.co/500x350/1a0e0e/ffffff?text=Event+2&font=raleway',
+    title: 'Somabay Endurance Festival -\nSomabay, Egypt',
+    description:
+      'With endurance challenges like running and cycling, this festival represents persistence and pushing boundaries. Trosc members would have related this energy to mastering difficult tracks and staying committed to learning.',
+    imageUrl: EventTwoImage,
+    alt: 'Trosc members at Somabay Endurance Festival',
   },
 ];
 
-const EventCard: React.FC<{ event: Event; index: number }> = ({ event, index }) => {
-  const isEven = index % 2 === 0;
-
+const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   return (
-    <div className={`flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-8 mb-12`}>
-      <div className="flex-1">
-        <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 whitespace-pre-line">{event.title}</h3>
-        <p className="text-gray-600 text-sm leading-relaxed mb-6 whitespace-pre-line">{event.description}</p>
-        <a href="#" className="inline-block bg-primary-dark text-white font-semibold py-2.5 px-6 rounded-full hover:bg-primary-dark-hover transition-colors duration-300 text-sm">
+    <article className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[1fr_1.05fr]">
+      <div>
+        <h3 className="mb-4 whitespace-pre-line text-3xl font-bold leading-snug text-neutral-darker">{event.title}</h3>
+        <p className="mb-7 whitespace-pre-line text-base leading-8 text-neutral-dark">{event.description}</p>
+        <a
+          href="#"
+          className="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-lg font-bold text-white transition-colors duration-300 hover:bg-primary-hover"
+        >
           See More
         </a>
       </div>
-      <div className="flex-shrink-0 w-full md:w-[45%]">
+
+      <div className="w-full">
         <img
           src={event.imageUrl}
-          alt={event.title}
-          className="w-full h-auto object-cover rounded-2xl shadow-md"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.onerror = null;
-            target.src = 'https://placehold.co/500x350/1a0e0e/ffffff?text=Image+Missing';
-          }}
+          alt={event.alt}
+          className="h-[220px] w-full rounded-2xl object-cover shadow-md md:h-[260px]"
         />
       </div>
-    </div>
+    </article>
   );
 };
 
 const Events: React.FC = () => {
   return (
-    <div id='events' className="w-full font-sans px-6 py-16 bg-white">
-      <div className="w-full max-w-6xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 text-center mb-12" style={{ fontFamily: "'Georgia', serif" }}>
-          Events
-        </h2>
+    <section id="events" className="w-full bg-white px-6 pb-10 pt-14 font-family-poppins">
+      <div className="mx-auto w-full max-w-5xl">
+        <h2 className="mb-12 text-center text-4xl font-extrabold text-primary-darker">Events</h2>
 
-        {eventsData.map((event, index) => (
-          <EventCard key={index} event={event} index={index} />
-        ))}
+        <div className="space-y-14">
+          {eventsData.map((event, index) => (
+            <EventCard key={index} event={event} />
+          ))}
+        </div>
+
+        <div className="mt-10 h-px w-full bg-neutral" />
       </div>
-    </div>
+    </section>
   );
 };
 
