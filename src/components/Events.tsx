@@ -27,7 +27,7 @@ const EventCard: React.FC<{ event: Event; index: number }> = ({ event, index }) 
       <div className="flex-1">
         <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 whitespace-pre-line">{event.title}</h3>
         <p className="text-gray-600 text-sm leading-relaxed mb-6 whitespace-pre-line">{event.description}</p>
-        <a href="#" className="inline-block bg-[#D41132] text-white font-semibold py-2.5 px-6 rounded-full hover:bg-[#b30e2a] transition-colors duration-300 text-sm">
+        <a href="#" className="inline-block bg-primary-dark text-white font-semibold py-2.5 px-6 rounded-full hover:bg-primary-dark-hover transition-colors duration-300 text-sm">
           See More
         </a>
       </div>

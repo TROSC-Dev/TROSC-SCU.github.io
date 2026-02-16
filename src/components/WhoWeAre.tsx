@@ -8,12 +8,13 @@ function WhoWeAre() {
         <div className="w-full h-[500px] overflow-hidden relative">
           <div className="absolute inset-0 z-10 bg-black/40"></div>
 
+
           <div className="absolute inset-0 z-20 flex flex-col justify-center px-8 md:px-16 lg:px-24">
             <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white italic leading-tight max-w-2xl">
               Not just a team — we're a family of growth..
             </h1>
             <div className="mt-8">
-              <a href="#contact" className="inline-block bg-[#D41132] text-white font-bold text-lg py-3 px-8 rounded-md hover:bg-[#b30e2a] transition-colors duration-300 shadow-lg">
+              <a href="#contact" className="inline-block bg-primary-dark text-white font-bold text-lg py-3 px-8 rounded-md hover:bg-primary-dark-hover transition-colors duration-300 shadow-lg">
                 Join our Family
               </a>
             </div>

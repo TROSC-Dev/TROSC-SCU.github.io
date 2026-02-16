@@ -6,4 +6,28 @@ html {
 
 @theme {
   --font-family-poppins: "Poppins", sans-serif;
+
+  /* Primary (Red) palette */
+  --color-primary-light: #fce8eb;
+  --color-primary-light-hover: #fce2e2;
+  --color-primary-light-active: #f8c2c2;
+  --color-primary: #e83b3b;
+  --color-primary-hover: #d13535;
+  --color-primary-active: #ba2f2f;
+  --color-primary-dark: #ae2c2c;
+  --color-primary-dark-hover: #8b2323;
+  --color-primary-dark-active: #681b1b;
+  --color-primary-darker: #511515;
+
+  /* Neutral (Grey) palette */
+  --color-neutral-light: #f8f8f8;
+  --color-neutral-light-hover: #f4f4f4;
+  --color-neutral-light-active: #e8e8e8;
+  --color-neutral: #b6b6b6;
+  --color-neutral-hover: #a4a4a4;
+  --color-neutral-active: #929292;
+  --color-neutral-dark: #898989;
+  --color-neutral-dark-hover: #6d6d6d;
+  --color-neutral-dark-active: #525252;
+  --color-neutral-darker: #404040;
 }

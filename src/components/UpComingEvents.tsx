@@ -84,7 +84,7 @@ const UpcomingEventCard: React.FC<{ event: UpcomingEvent }> = ({ event }) => {
         <h3 className="text-lg font-bold text-gray-900 mb-1">{event.title} – {event.location}</h3>
         <Countdown targetDate={event.date} />
       </div>
-      <button className="bg-[#D41132] text-white font-bold py-2.5 px-8 rounded-full hover:bg-[#b30e2a] transition-colors shadow-md whitespace-nowrap">
+      <button className="bg-primary-dark text-white font-bold py-2.5 px-8 rounded-full hover:bg-primary-dark-hover transition-colors shadow-md whitespace-nowrap">
         Enroll Now
       </button>
     </div>

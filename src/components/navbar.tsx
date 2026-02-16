@@ -50,15 +50,20 @@ const Navbar: React.FC = () => {
               >
                 {link.name}
                 {activeLink === link.href && (
-                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gray-900"></span>
+                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary-dark"></span>
                 )}
               </a>
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <button className="hidden md:block text-gray-600 hover:text-gray-900 transition-colors">
+            <a href="pages/signUpPage.tsx" onClick={(e) => handleNavClick(e)} className="inline-block bg-primary text-white font-bold text-base py-2 px-2.5 rounded-md hover:bg-primary-hover transition-colors duration-300 shadow-lg cursor-pointer">
+              Sign Up
+            </a>
+            {/* menu button */}
+            {/* <button className="hidden md:block text-gray-600 hover:text-gray-900 transition-colors">
               <Menu size={24} />
-            </button>
+            </button> */}
+            {/* user button */}
             <button className="text-gray-600 hover:text-gray-900 transition-colors">
               <User size={24} />
             </button>

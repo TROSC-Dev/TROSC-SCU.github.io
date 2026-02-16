@@ -40,7 +40,7 @@ const TrackCard: React.FC<{ track: Track }> = ({ track }) => {
       <div className="p-5">
         <h3 className="text-lg font-bold text-gray-900 mb-2">{track.title}</h3>
         <p className="text-gray-600 text-sm mb-4 leading-relaxed">{track.description}</p>
-        <a href="#" className="text-[#D41132] font-semibold text-sm hover:underline">
+        <a href="#" className="text-primary-dark font-semibold text-sm hover:underline">
           View track
         </a>
       </div>
@@ -63,7 +63,7 @@ const Tracks: React.FC = () => {
         </div>
 
         <div className="text-center">
-          <button className="py-3 px-10 bg-[#D41132] text-white font-semibold rounded-full hover:bg-[#b30e2a] transition-colors duration-300 shadow-md">
+          <button className="py-3 px-10 bg-primary-dark text-white font-semibold rounded-full hover:bg-primary-dark-hover transition-colors duration-300 shadow-md">
             See All  Tracks
           </button>
         </div>

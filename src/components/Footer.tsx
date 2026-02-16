@@ -16,7 +16,7 @@ const PhoneIcon: React.FC = () => (
 
 const Footer: React.FC = () => {
   return (
-    <footer id='contact' className="bg-[#1B0D10] text-gray-300 py-12 px-8 font-sans">
+    <footer id='contact' className="bg-primary-darker text-gray-300 py-12 px-8 font-sans">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
 
