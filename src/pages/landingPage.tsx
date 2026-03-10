@@ -1,24 +1,29 @@
-import Navbar from "../components/Navbar";
-import WhoWeAre from "../components/WhoWeAre";
+import WhoWeAre from "../sections/WhoWeAre";
 import Divider from "../components/Divider";
-import Tracks from './../components/Tracks';
-import Events from './../components/Events';
-import UpcomingEvents from './../components/UpComingEvents';
-import Footer from './../components/Footer';
+import Tracks from '../sections/Tracks';
+import Events from '../sections/Events';
+import UpcomingEvents from '../sections/UpComingEvents';
 
 function LandingPage() {
     return (
-        <div className="min-h-screen bg-white">
-            <Navbar />
+        <>
+            <section id="home">
             <WhoWeAre />
+            </section>
             <Divider />
+            <section id="tracks">
             <Tracks />
+            </section>
             <Divider />
+            <section id="events">
             <Events />
-            <UpcomingEvents />
+            </section>
             <Divider />
-            <Footer />
-        </div>
+            <section id="upcoming-events">
+            <UpcomingEvents />
+            </section>           
+            <Divider />
+        </>
     )
 }
 export default LandingPage;

@@ -1,5 +1,5 @@
 import React from 'react';
-import TrackCard from '../components/trackCard';
+import TrackCard from './trackCard';
 
 interface Track {
   imageUrl: string;

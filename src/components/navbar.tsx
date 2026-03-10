@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
-// import { User } from 'lucide-react';
-import TroscLogo from '../../Assests/TroscLogoRed.png';
-import { useSmoothScroll } from '../hooks/useSmoothScroll';
+import React, { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
+import TroscLogo from "../../Assests/TroscLogoRed.png";
+import { Link, useLocation } from "react-router-dom";
 
 type NavLink = {
   name: string;
@@ -11,20 +10,29 @@ type NavLink = {
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [activeLink, setActiveLink] = useState<string>('#home');
-  const { handleAnchorClick } = useSmoothScroll({ offset: 80 });
+  const [activeLink, setActiveLink] = useState<string>("/#home");
+  const location = useLocation();
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    const href = e.currentTarget.getAttribute('href') || '';
+  useEffect(() => {
+    if (location.pathname === "/") {
+      const hash = location.hash || "#home";
+      setActiveLink(`/${hash}`);
+      return;
+    }
+
+    setActiveLink(location.pathname);
+  }, [location.hash, location.pathname]);
+
+  const handleNavClick = (href: string) => {
     setActiveLink(href);
-    handleAnchorClick(e);
     if (isOpen) setIsOpen(false);
   };
+
   const navLinks: NavLink[] = [
-    { name: 'Home', href: '#home' },
-    { name: 'Tracks', href: '#tracks' },
-    { name: 'Events', href: '#events' },
-    { name: 'Contact us', href: '#contact' }
+    { name: "Home", href: "/#home" },
+    { name: "Tracks", href: "/#tracks" },
+    { name: "Events", href: "/#events" },
+    { name: "Contact us", href: "/#contact" },
   ];
 
   return (
@@ -40,54 +48,59 @@ const Navbar: React.FC = () => {
           </div>
           <div className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex space-x-10">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.name}
-                href={link.href}
-                onClick={(e) => handleNavClick(e)}
-                className={`text-base font-medium transition-colors duration-300 relative ${activeLink === link.href
-                  ? 'text-gray-900'
-                  : 'text-gray-600 hover:text-gray-900'
-                  }`}
+                to={link.href}
+                onClick={() => handleNavClick(link.href)}
+                className={`text-base font-medium transition-colors duration-300 relative ${
+                  activeLink === link.href
+                    ? "text-gray-900"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
               >
                 {link.name}
                 {activeLink === link.href && (
                   <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary-dark"></span>
                 )}
-              </a>
+              </Link>
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <a href="pages/logInPage.tsx" onClick={(e) => handleNavClick(e)} className="inline-block bg-primary text-white font-bold text-base py-2.5 px-2.5 rounded-md hover:bg-primary-hover transition-colors duration-300 shadow-lg cursor-pointer">
+            <Link
+              to="/signin"
+              className="inline-block bg-primary text-white font-bold text-base py-2.5 px-2.5 rounded-md hover:bg-primary-hover transition-colors duration-300 shadow-lg cursor-pointer"
+            >
               Log In
-            </a>
-            {/* menu button */}
-            {/* <button className="hidden md:block text-gray-600 hover:text-gray-900 transition-colors">
-              <Menu size={24} />
-            </button> */}
-            {/* user button */}
-            {/* <button className="text-gray-600 hover:text-gray-900 transition-colors">
-              <User size={24} />
-            </button> */}
-            <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-gray-600 hover:text-gray-900 transition-colors duration-300" aria-label={isOpen ? 'Close menu' : 'Open menu'}>
+            </Link>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden text-gray-600 hover:text-gray-900 transition-colors duration-300"
+              aria-label={isOpen ? "Close menu" : "Open menu"}
+            >
               {isOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
           </div>
         </div>
       </div>
-      <div className={`md:hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+      <div
+        className={`md:hidden transition-all duration-300 ease-in-out ${
+          isOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
+        }`}
+      >
         <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-100">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.name}
-              href={link.href}
-              onClick={(e) => handleNavClick(e)}
-              className={`block px-3 py-2 rounded-md text-base font-medium ${activeLink === link.href
-                ? 'text-gray-900 bg-gray-50'
-                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+              to={link.href}
+              onClick={() => handleNavClick(link.href)}
+              className={`block px-3 py-2 rounded-md text-base font-medium ${
+                activeLink === link.href
+                  ? "text-gray-900 bg-gray-50"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+              }`}
             >
               {link.name}
-            </a>
+            </Link>
           ))}
         </div>
       </div>

@@ -62,8 +62,6 @@ const Events: React.FC = () => {
             <EventCard key={index} event={event} />
           ))}
         </div>
-
-        <div className="mt-10 h-px w-full bg-neutral" />
       </div>
     </section>
   );

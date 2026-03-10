@@ -1,10 +1,11 @@
 import TeamPic from '../../Assests/teamwork.jpg';
+import { Link } from 'react-router-dom';
 
 function WhoWeAre() {
   return (
     <>
       {/* Hero Section */}
-      <section id="home" className="pt-16">
+      <section className="pt-16">
         <div className="w-full h-[500px] overflow-hidden relative">
           <div className="absolute inset-0 z-10 bg-black/40"></div>
 
@@ -15,9 +16,9 @@ function WhoWeAre() {
                 Not just a team — we're a family of growth..
               </h1>
               <div className="mt-8">
-                <a href="signUpPage.tsx" className="inline-block bg-primary text-white font-bold text-lg py-3 px-8 rounded-md hover:bg-primary-hover transition-colors duration-300 shadow-lg">
+                <Link to="/signup" className="inline-block bg-primary text-white font-bold text-lg py-3 px-8 rounded-md hover:bg-primary-hover transition-colors duration-300 shadow-lg">
                   Join our Family
-                </a>
+                </Link>
               </div>
             </div>
           </div>
