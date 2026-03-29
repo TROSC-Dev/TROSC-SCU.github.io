@@ -68,8 +68,7 @@ const Navbar: React.FC = () => {
           <div className="flex items-center gap-3">
             <Link
               to="/signin"
-              className="inline-block bg-primary text-white font-bold text-base py-2.5 px-2.5 rounded-md hover:bg-primary-hover transition-colors duration-300 shadow-lg cursor-pointer"
-            >
+              className="inline-block bg-primary text-white font-bold text-base py-2.5 px-2.5 rounded-md hover:bg-primary-hover transition-colors duration-300 shadow-lg cursor-pointer">
               Log In
             </Link>
             <button
