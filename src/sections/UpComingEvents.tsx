@@ -11,6 +11,7 @@ interface TimeLeft {
   days?: number;
   hours?: number;
   minutes?: number;
+  seconds?: number;
 }
 
 const upcomingEventsData: UpcomingEvent[] = [
@@ -38,6 +39,7 @@ const Countdown: React.FC<{ targetDate: string }> = ({ targetDate }) => {
         days: totalDays % 30,
         hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
         minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
       };
     }
     return timeLeft;
@@ -59,6 +61,8 @@ const Countdown: React.FC<{ targetDate: string }> = ({ targetDate }) => {
   if (timeLeft.days && timeLeft.days > 0) timerComponents.push(`${timeLeft.days} day${timeLeft.days > 1 ? 's' : ''}`);
   if (timeLeft.hours && timeLeft.hours > 0) timerComponents.push(`${timeLeft.hours} hour${timeLeft.hours > 1 ? 's' : ''}`);
   if (timeLeft.minutes && timeLeft.minutes > 0) timerComponents.push(`${timeLeft.minutes} minute${timeLeft.minutes > 1 ? 's' : ''}`);
+  
+  if (timeLeft.seconds !== undefined) timerComponents.push(`${timeLeft.seconds} second${timeLeft.seconds === 1 ? '' : 's'}`);
 
   let countdownString = 'only ';
   if (timerComponents.length > 1) {
@@ -66,7 +70,7 @@ const Countdown: React.FC<{ targetDate: string }> = ({ targetDate }) => {
   } else if (timerComponents.length === 1) {
     countdownString += timerComponents[0];
   } else {
-    countdownString += 'less than a minute';
+    countdownString += 'less than a second';
   }
   countdownString += ' to go.';
 

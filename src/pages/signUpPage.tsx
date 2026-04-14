@@ -1,7 +1,14 @@
-const SignUpPage = () => {
-  return (
-    <div>signUpPage</div>
-  )
-}
+import React from 'react';
+import SignUpForm from '../components/SignUpForm';
+import AuthLayout from '../layout/AuthLayout';
+import TroscLogo from "../../Assests/TroscLogoRed.png";
 
-export default SignUpPage
+const SignUpPage: React.FC = () => {
+  return (
+    <AuthLayout logo={TroscLogo}>
+      <SignUpForm />
+    </AuthLayout>
+  );
+};
+
+export default SignUpPage;
