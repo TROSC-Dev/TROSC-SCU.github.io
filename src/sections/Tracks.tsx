@@ -1,5 +1,8 @@
 import React from 'react';
 import TrackCard from './trackCard';
+import CyberSecurityImage from '../../Assests/cyber security.jpg';
+import MobileImage from '../../Assests/mobile.jpg';
+import BackendImage from '../../Assests/backend.jpg';
 
 interface Track {
   imageUrl: string;
@@ -9,17 +12,17 @@ interface Track {
 
 const tracksData: Track[] = [
   {
-    imageUrl: 'https://placehold.co/600x400/1a0e0e/ffffff?text=Cyber+Security&font=raleway',
+    imageUrl: CyberSecurityImage,
     title: 'Cyber security',
     description: 'Safeguarding digital assets through proactive threat management and robust security protocols.',
   },
   {
-    imageUrl: 'https://placehold.co/600x400/1a0e0e/ffffff?text=Mobile&font=raleway',
+    imageUrl: MobileImage,
     title: 'Mobile',
     description: 'Involves creating user-friendly mobile apps for Android and iOS platforms.',
   },
   {
-    imageUrl: 'https://placehold.co/600x400/1a0e0e/ffffff?text=Backend&font=raleway',
+    imageUrl: BackendImage,
     title: 'Backend',
     description: 'Deals with servers, databases, and logic that power applications behind the scenes.',
   },

@@ -6,6 +6,7 @@ import LandingPage from "./pages/landingPage"
 import SignInPage from "./pages/signInPage"
 import SignUpPage from "./pages/signUpPage"
 import ForgotPasswordPage from "./pages/forgotPasswordPage"
+import ContactUsPage from "./pages/contactUsPage"
 import useScrollToHash from "./hooks/useScrollToHash"
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
 
       <Route element={<MainLayout />}>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/contact" element={<ContactUsPage />} />
       </Route>
 
       {/* Auth pages without navbar/footer */}

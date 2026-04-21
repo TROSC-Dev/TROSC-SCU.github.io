@@ -10,10 +10,8 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, logo }) => {
   return (
     <div className="w-full min-h-[calc(100vh-80px)] bg-white">
       <div className="w-full h-full grid grid-cols-1 lg:grid-cols-2">
-        {/* Left Section - Branding (Hidden on mobile) */}
         <div className="hidden lg:flex flex-col items-center justify-center bg-white px-8 py-12">
-          <Link to="/" className="text-center hover:opacity-80 transition-opacity">
-            {/* TROSC Logo */}
+          <Link to="/" className="text-center">
             <div className="mb-10">
               {logo ? (
                 <img src={logo} alt="TROSC Logo" className="max-w-xs mx-auto cursor-pointer" />

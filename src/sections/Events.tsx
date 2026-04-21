@@ -1,6 +1,6 @@
 import React from 'react';
 import EventOneImage from '../../Assests/teamwork2.jpg';
-import EventTwoImage from '../../Assests/teamwork.jpg';
+import EventTwoImage from '../../Assests/event 1.jpg';
 
 interface Event {
   title: string;
