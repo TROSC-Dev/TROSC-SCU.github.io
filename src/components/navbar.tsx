@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import TroscLogo from "../../Assests/TroscLogoRed.png";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { smoothScrollToId } from "../utils/smoothScroll";
 
 type NavLink = {
   name: string;
@@ -12,6 +13,7 @@ const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [activeLink, setActiveLink] = useState<string>("/#home");
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (location.pathname === "/") {
@@ -19,19 +21,38 @@ const Navbar: React.FC = () => {
       setActiveLink(`/${hash}`);
       return;
     }
-
     setActiveLink(location.pathname);
   }, [location.hash, location.pathname]);
 
-  const handleNavClick = (href: string) => {
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
     setActiveLink(href);
     if (isOpen) setIsOpen(false);
+
+    // Only intercept same-page hash links (e.g. /#tracks, /#events)
+    if (href.startsWith("/#")) {
+      e.preventDefault(); // Stop the browser from doing an instant jump
+
+      const id = href.replace("/#", "");
+
+      if (location.pathname === "/") {
+        // Already on home — scroll with our custom rAF scroller
+        smoothScrollToId(id);
+        // Keep the URL in sync without triggering navigation
+        window.history.pushState(null, "", href);
+      } else {
+        // On a different page — navigate first, then useScrollToHash
+        // will handle the smooth scroll after the route renders
+        navigate(href);
+      }
+    }
+    // Non-hash links (/contact, /signin) fall through to normal Link behavior
   };
 
   const navLinks: NavLink[] = [
     { name: "Home", href: "/#home" },
     { name: "Tracks", href: "/#tracks" },
     { name: "Events", href: "/#events" },
+    { name: "Up-Coming Events", href: "/#upcoming-events" },
     { name: "Contact us", href: "/contact" },
   ];
 
@@ -51,12 +72,11 @@ const Navbar: React.FC = () => {
               <Link
                 key={link.name}
                 to={link.href}
-                onClick={() => handleNavClick(link.href)}
-                className={`text-base font-medium transition-colors duration-300 relative ${
-                  activeLink === link.href
+                onClick={(e) => handleNavClick(e, link.href)}
+                className={`text-base font-medium transition-colors duration-300 relative ${activeLink === link.href
                     ? "text-gray-900"
                     : "text-gray-600 hover:text-gray-900"
-                }`}
+                  }`}
               >
                 {link.name}
                 {activeLink === link.href && (
@@ -82,21 +102,19 @@ const Navbar: React.FC = () => {
         </div>
       </div>
       <div
-        className={`md:hidden transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
-        }`}
+        className={`md:hidden transition-all duration-300 ease-in-out ${isOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0 overflow-hidden"
+          }`}
       >
         <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-100">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               to={link.href}
-              onClick={() => handleNavClick(link.href)}
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
-                activeLink === link.href
+              onClick={(e) => handleNavClick(e, link.href)}
+              className={`block px-3 py-2 rounded-md text-base font-medium ${activeLink === link.href
                   ? "text-gray-900 bg-gray-50"
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-              }`}
+                }`}
             >
               {link.name}
             </Link>
