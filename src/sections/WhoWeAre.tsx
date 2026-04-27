@@ -1,4 +1,4 @@
-import TeamPic from '../../Assests/teamwork.jpg';
+import TeamPic from '../../Assests/teamwork.webp';
 import { Link } from 'react-router-dom';
 
 function WhoWeAre() {

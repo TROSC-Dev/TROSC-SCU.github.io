@@ -1,8 +1,8 @@
 import React from 'react';
 import TrackCard from './trackCard';
-import CyberSecurityImage from '../../Assests/cyber security.jpg';
-import MobileImage from '../../Assests/mobile.jpg';
-import BackendImage from '../../Assests/backend.jpg';
+import CyberSecurityImage from '../../Assests/cyber security.webp';
+import MobileImage from '../../Assests/mobile.webp';
+import BackendImage from '../../Assests/backend.webp';
 
 interface Track {
   imageUrl: string;

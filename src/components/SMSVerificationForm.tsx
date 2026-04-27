@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 interface SMSVerificationData {
@@ -16,7 +16,7 @@ const SMSVerificationForm: React.FC<SMSVerificationFormProps> = ({
 }) => {
   const { handleSubmit, formState: { isSubmitting } } = useForm<SMSVerificationData>();
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [digits, setDigits] = React.useState(['', '', '', '', '']);
+  const [digits, setDigits] = useState(['', '', '', '', '']);
 
   const handleInputChange = (index: number, value: string) => {
     if (!/^\d?$/.test(value)) return;

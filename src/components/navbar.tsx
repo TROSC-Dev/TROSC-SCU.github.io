@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import TroscLogo from "../../Assests/TroscLogoRed.png";
+import TroscLogo from "../../Assests/TroscLogoRed.webp";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { smoothScrollToId } from "../utils/smoothScroll";
 

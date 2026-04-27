@@ -3,7 +3,7 @@ import AuthLayout from '../layout/AuthLayout';
 import ForgotPasswordForm from '../components/ForgotPasswordForm';
 import SMSVerificationForm from '../components/SMSVerificationForm';
 import ResetPasswordForm from '../components/ResetPasswordForm';
-import TroscLogo from '../../Assests/TroscLogoRed.png';
+import TroscLogo from '../../Assests/TroscLogoRed.webp';
 
 type PasswordResetStep = 'forgot' | 'sms' | 'reset';
 
