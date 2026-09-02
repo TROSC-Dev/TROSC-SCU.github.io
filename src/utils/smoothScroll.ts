@@ -4,14 +4,14 @@
  * hand-rolled so it works regardless of browser quirks or React Router.
  */
 
-const NAVBAR_HEIGHT = 64; // px — matches h-16 in Navbar
-const DURATION = 800;     // ms — scroll animation duration
+// 64px (h-16 navbar) + 16px breathing room so section headings aren't
+// flush against the navbar bottom edge after scroll.
+const NAVBAR_HEIGHT = 80;
+const DURATION = 800; // ms — scroll animation duration
 
 /** Cubic ease-in-out: starts slow, speeds up, ends slow */
 function easeInOutCubic(t: number): number {
-  return t < 0.5
-    ? 4 * t * t * t
-    : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 /**

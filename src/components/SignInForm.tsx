@@ -1,91 +1,122 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import PasswordInput from "./PasswordInput";
+import * as api from "../services/api";
 
-interface SignInData {
-  username: string;
+interface SignInFormData {
+  email: string;
   password: string;
   rememberMe: boolean;
 }
 
 function SignInForm() {
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
-  } = useForm<SignInData>();
+  } = useForm<SignInFormData>();
 
-  const [showPassword, setShowPassword] = useState(false);
-
-  const onSubmit = (data: SignInData) => {
-    console.log('Form Data Submitted:', data);
-    reset();
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  const onSubmit = async (data: SignInFormData) => {
+    setServerError(null);
+    try {
+      await api.signIn({ email: data.email, password: data.password });
+      navigate("/");
+    } catch (err) {
+      setServerError(
+        err instanceof Error
+          ? err.message
+          : "Sign in failed. Please try again.",
+      );
+    }
   };
 
   return (
     <div className="w-full max-w-md bg-neutral-light px-8 py-12 rounded-3xl shadow-lg font-family-poppins">
-      <h1 className="text-4xl font-bold text-neutral-darker text-center mb-8">Sign In</h1>
+      <h1 className="text-4xl font-bold text-neutral-darker text-center mb-8">
+        Sign In
+      </h1>
+
+      {serverError && (
+        <p
+          role="alert"
+          className="mb-4 text-sm text-red-600 text-center bg-red-50 rounded-xl px-4 py-2"
+        >
+          {serverError}
+        </p>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-        {/* Username Field */}
+        {/* Email Field */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="username" className="text-sm font-semibold text-neutral-darker">
-            Username
+          <label
+            htmlFor="email"
+            className="text-sm font-semibold text-neutral-darker"
+          >
+            Email
           </label>
           <input
-            id="username"
-            type="text"
-            {...register('username', { required: 'Username is required' })}
-            placeholder="Enter your username"
+            id="email"
+            type="email"
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Please enter a valid email address",
+              },
+            })}
+            placeholder="Enter your email"
             className="px-4 py-3 border-2 border-neutral-light-active rounded-full bg-neutral-light text-neutral-darker placeholder-neutral focus:outline-none focus:border-primary transition-colors"
           />
-          {errors.username && (
-            <span className="text-xs text-red-600">{errors.username.message}</span>
+          {errors.email && (
+            <span className="text-xs text-red-600">{errors.email.message}</span>
           )}
         </div>
 
         {/* Password Field */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="password" className="text-sm font-semibold text-neutral-darker">
+          <label
+            htmlFor="password"
+            className="text-sm font-semibold text-neutral-darker"
+          >
             Password
           </label>
-          <div className="relative">
-            <input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              {...register('password', { required: 'Password is required' })}
-              placeholder="Enter your password"
-              className="w-full px-4 py-3 border-2 border-neutral-light-active rounded-full bg-neutral-light text-neutral-darker placeholder-neutral focus:outline-none focus:border-primary transition-colors pr-12"
-            />
-            <button
-              type="button"
-              onClick={togglePasswordVisibility}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-dark hover:text-neutral-darker transition-colors"
-              aria-label="Toggle password visibility"
-            >
-              {showPassword ? '🙈' : '👁️'}
-            </button>
-          </div>
+          <PasswordInput
+            id="password"
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 8,
+                message: "Password must be at least 8 characters",
+              },
+            })}
+            placeholder="Enter your password"
+          />
           {errors.password && (
-            <span className="text-xs text-red-600">{errors.password.message}</span>
+            <span className="text-xs text-red-600">
+              {errors.password.message}
+            </span>
           )}
         </div>
 
         {/* Remember Me & Forgot Password */}
         <div className="flex items-center justify-between">
-          <label htmlFor="rememberMe" className="flex items-center gap-2 cursor-pointer">
+          <label
+            htmlFor="rememberMe"
+            className="flex items-center gap-2 cursor-pointer"
+          >
             <input
               id="rememberMe"
               type="checkbox"
-              {...register('rememberMe')}
+              {...register("rememberMe")}
               className="w-4 h-4 rounded cursor-pointer accent-primary"
             />
-            <span className="text-sm text-neutral-darker font-medium">Remember me</span>
+            <span className="text-sm text-neutral-darker font-medium">
+              Remember me
+            </span>
           </label>
           <Link
             to="/forgot-password"
@@ -101,14 +132,17 @@ function SignInForm() {
           disabled={isSubmitting}
           className="w-full py-3 mt-2 bg-primary hover:bg-primary-hover active:bg-primary-active text-white font-bold text-lg rounded-full transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? 'Signing In...' : 'Sign In'}
+          {isSubmitting ? "Signing In..." : "Sign In"}
         </button>
       </form>
 
       {/* Sign Up Link */}
       <div className="text-center mt-8">
         <span className="text-neutral-darker">Don't have an Account? </span>
-        <Link to="/signup" className="text-primary font-semibold hover:text-primary-hover transition-colors">
+        <Link
+          to="/signup"
+          className="text-primary font-semibold hover:text-primary-hover transition-colors"
+        >
           Sign Up
         </Link>
       </div>

@@ -12,7 +12,13 @@ export default function useScrollToHash() {
   const location = useLocation();
 
   useEffect(() => {
-    if (!location.hash) return;
+    // No hash — snap to the top of the new page immediately.
+    // This prevents the previous page's scroll position from carrying over
+    // when navigating to routes like /track/:id or /contact.
+    if (!location.hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      return;
+    }
 
     const id = location.hash.replace("#", "");
     const MAX_ATTEMPTS = 10;

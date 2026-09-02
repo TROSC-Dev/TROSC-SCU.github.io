@@ -5,8 +5,8 @@ import ContactUsForm from "../components/ContactUsForm";
 const ContactUsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F4F4F4] pt-20 font-[Poppins]">
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-16 py-16">
-        <div className="flex flex-col lg:flex-row gap-16 lg:gap-24">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-16 py-8">
+        <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
 
           <div className="lg:w-5/12 flex flex-col">
 
@@ -19,7 +19,7 @@ const ContactUsPage: React.FC = () => {
               Contact Us
             </h2>
 
-            <p className="font-normal text-[22px] leading-[1.5] text-black mb-10 max-w-[414px]">
+            <p className="font-normal text-[22px] leading-[1.5] text-black mb-6 max-w-[414px]">
               Got a question or an idea? We're more than a team — we're a family
               that listens and supports. Reach out anytime, and let's turn your
               message into the start of something great.

@@ -1,68 +1,100 @@
-import { useState } from 'react';import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import PasswordInput from "./PasswordInput";
+import * as api from "../services/api";
 
-interface SignUpData {
-  userName: string;
+interface SignUpFormData {
+  name: string;
   email: string;
   password: string;
   confirmPassword: string;
 }
 
 function SignUpForm() {
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
-    reset,
-  } = useForm<SignUpData>();
+  } = useForm<SignUpFormData>();
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const onSubmit = (data: SignUpData) => {
-    console.log("Form Data Submitted:", data);
-    reset();
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
+  const onSubmit = async (data: SignUpFormData) => {
+    setServerError(null);
+    try {
+      await api.signUp({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        passwordConfirm: data.confirmPassword,
+      });
+      navigate("/signin");
+    } catch (err) {
+      setServerError(
+        err instanceof Error
+          ? err.message
+          : "Sign up failed. Please try again.",
+      );
+    }
   };
 
   return (
     <div className="w-full max-w-lg bg-neutral-light px-8 py-12 rounded-3xl shadow-lg font-family-poppins">
-      <h1 className="text-4xl font-bold text-neutral-darker text-center mb-8">Sign Up</h1>
+      <h1 className="text-4xl font-bold text-neutral-darker text-center mb-8">
+        Sign Up
+      </h1>
+
+      {serverError && (
+        <p
+          role="alert"
+          className="mb-4 text-sm text-red-600 text-center bg-red-50 rounded-xl px-4 py-2"
+        >
+          {serverError}
+        </p>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-        {/* Username Field */}
+        {/* Full Name Field */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="userName" className="text-sm font-semibold text-neutral-darker">
-            Username
+          <label
+            htmlFor="name"
+            className="text-sm font-semibold text-neutral-darker"
+          >
+            Full Name
           </label>
           <input
-            id="userName"
+            id="name"
             type="text"
-            {...register('userName', { required: 'Username is required' })}
-            placeholder="Enter your username"
+            {...register("name", { required: "Full name is required" })}
+            placeholder="Enter your full name"
             className="px-4 py-3 border-2 border-neutral-light-active rounded-full bg-neutral-light text-neutral-darker placeholder-neutral focus:outline-none focus:border-primary transition-colors"
           />
-          {errors.userName && (
-            <span className="text-xs text-red-600">{errors.userName.message}</span>
+          {errors.name && (
+            <span className="text-xs text-red-600">{errors.name.message}</span>
           )}
         </div>
 
         {/* Email Field */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="email" className="text-sm font-semibold text-neutral-darker">
+          <label
+            htmlFor="email"
+            className="text-sm font-semibold text-neutral-darker"
+          >
             Email
           </label>
           <input
             id="email"
             type="email"
-            {...register('email', { required: 'Email is required' })}
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Please enter a valid email address",
+              },
+            })}
             placeholder="Enter your email"
             className="px-4 py-3 border-2 border-neutral-light-active rounded-full bg-neutral-light text-neutral-darker placeholder-neutral focus:outline-none focus:border-primary transition-colors"
           />
@@ -73,55 +105,51 @@ function SignUpForm() {
 
         {/* Password Field */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="password" className="text-sm font-semibold text-neutral-darker">
+          <label
+            htmlFor="password"
+            className="text-sm font-semibold text-neutral-darker"
+          >
             Password
           </label>
-          <div className="relative">
-            <input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              {...register('password', { required: 'Password is required' })}
-              placeholder="Enter your password"
-              className="w-full px-4 py-3 border-2 border-neutral-light-active rounded-full bg-neutral-light text-neutral-darker placeholder-neutral focus:outline-none focus:border-primary transition-colors pr-12"
-            />
-            <button
-              type="button"
-              onClick={togglePasswordVisibility}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-dark hover:text-neutral-darker transition-colors"
-              aria-label="Toggle password visibility"
-            >
-              {showPassword ? '🙈' : '👁️'}
-            </button>
-          </div>
+          <PasswordInput
+            id="password"
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 8,
+                message: "Password must be at least 8 characters",
+              },
+            })}
+            placeholder="Enter your password"
+          />
           {errors.password && (
-            <span className="text-xs text-red-600">{errors.password.message}</span>
+            <span className="text-xs text-red-600">
+              {errors.password.message}
+            </span>
           )}
         </div>
 
         {/* Confirm Password Field */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="confirmPassword" className="text-sm font-semibold text-neutral-darker">
+          <label
+            htmlFor="confirmPassword"
+            className="text-sm font-semibold text-neutral-darker"
+          >
             Confirm Password
           </label>
-          <div className="relative">
-            <input
-              id="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
-              {...register('confirmPassword', { required: 'Please confirm your password' })}
-              placeholder="Confirm your password"
-              className="w-full px-4 py-3 border-2 border-neutral-light-active rounded-full bg-neutral-light text-neutral-darker placeholder-neutral focus:outline-none focus:border-primary transition-colors pr-12"
-            />
-            <button
-              type="button"
-              onClick={toggleConfirmPasswordVisibility}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-dark hover:text-neutral-darker transition-colors"
-              aria-label="Toggle confirm password visibility"
-            >
-              {showConfirmPassword ? '🙈' : '👁️'}
-            </button>
-          </div>
+          <PasswordInput
+            id="confirmPassword"
+            {...register("confirmPassword", {
+              required: "Please confirm your password",
+              validate: (value) =>
+                value === watch("password") || "Passwords do not match",
+            })}
+            placeholder="Confirm your password"
+          />
           {errors.confirmPassword && (
-            <span className="text-xs text-red-600">{errors.confirmPassword.message}</span>
+            <span className="text-xs text-red-600">
+              {errors.confirmPassword.message}
+            </span>
           )}
         </div>
 
@@ -131,14 +159,17 @@ function SignUpForm() {
           disabled={isSubmitting}
           className="w-full py-3 mt-6 bg-primary hover:bg-primary-hover active:bg-primary-active text-white font-bold text-lg rounded-full transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? 'Signing Up...' : 'Sign Up'}
+          {isSubmitting ? "Signing Up..." : "Sign Up"}
         </button>
       </form>
 
       {/* Sign In Link */}
       <div className="text-center mt-8">
         <span className="text-neutral-darker">Already have an Account? </span>
-        <Link to="/signin" className="text-primary font-semibold hover:text-primary-hover transition-colors">
+        <Link
+          to="/signin"
+          className="text-primary font-semibold hover:text-primary-hover transition-colors"
+        >
           Sign In
         </Link>
       </div>

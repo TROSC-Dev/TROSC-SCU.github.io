@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Send, CheckCircle } from "lucide-react";
+import * as api from "../services/api";
 
 type ContactFormInputs = {
   username: string;
@@ -10,8 +11,9 @@ type ContactFormInputs = {
   message: string;
 };
 
-const ContactUsForm: React.FC = () => {
+const ContactUsForm = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const {
     register,
@@ -21,15 +23,23 @@ const ContactUsForm: React.FC = () => {
   } = useForm<ContactFormInputs>();
 
   const onSubmit = async (data: ContactFormInputs) => {
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    console.log("Contact form submitted:", data);
-    setIsSubmitted(true);
-    reset();
-    setTimeout(() => setIsSubmitted(false), 4000);
+    setServerError(null);
+    try {
+      await api.sendContactMessage(data);
+      setIsSubmitted(true);
+      reset();
+      setTimeout(() => setIsSubmitted(false), 4000);
+    } catch (err) {
+      setServerError(
+        err instanceof Error
+          ? err.message
+          : "Failed to send message. Please try again.",
+      );
+    }
   };
 
   const inputBase =
-    "w-full px-4 py-3 rounded-2xl border border-black/30 bg-transparent font-[Poppins] text-sm text-gray-800 placeholder:text-black/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200";
+    "w-full px-4 py-2.5 rounded-2xl border border-black/30 bg-transparent font-[Poppins] text-sm text-gray-800 placeholder:text-black/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200";
 
   const errorClass = "border-red-400 focus:border-red-500 focus:ring-red-200";
 
@@ -38,7 +48,7 @@ const ContactUsForm: React.FC = () => {
       <p className="font-[Poppins] font-semibold text-[30px] leading-[1.5] text-black mb-1">
         We'd love to hear from you!
       </p>
-      <p className="font-[Poppins] font-semibold text-[30px] leading-[1.5] text-black mb-8">
+      <p className="font-[Poppins] font-semibold text-[30px] leading-[1.5] text-black mb-4">
         Let's get in touch
       </p>
 
@@ -51,7 +61,18 @@ const ContactUsForm: React.FC = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+      {serverError && (
+        <div
+          role="alert"
+          className="mb-6 px-5 py-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl"
+        >
+          <span className="font-[Poppins] text-sm font-medium">
+            {serverError}
+          </span>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
         <div>
           <label
             htmlFor="username"
@@ -121,7 +142,6 @@ const ContactUsForm: React.FC = () => {
           )}
         </div>
 
-
         <div>
           <label
             htmlFor="phone"
@@ -149,7 +169,6 @@ const ContactUsForm: React.FC = () => {
           )}
         </div>
 
-
         <div>
           <label
             htmlFor="message"
@@ -159,10 +178,9 @@ const ContactUsForm: React.FC = () => {
           </label>
           <textarea
             id="message"
-            rows={5}
+            rows={4}
             placeholder="Enter your message Here..."
-            className={`${inputBase} resize-none bg-[#EAEAEA] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] border-black/10 rounded-[20px] ${errors.message ? errorClass : ""
-              }`}
+            className={`${inputBase} resize-none bg-[#EAEAEA] shadow-[0px_4px_12px_0px_rgba(0,0,0,0.25)] border-black/10 rounded-[20px] ${errors.message ? errorClass : ""}`}
             {...register("message", {
               required: "Message is required",
               minLength: {
@@ -178,12 +196,11 @@ const ContactUsForm: React.FC = () => {
           )}
         </div>
 
-
         <button
           type="submit"
           disabled={isSubmitting}
           id="contact-submit-btn"
-          className="w-full flex items-center justify-center gap-3 bg-[#D41132] hover:bg-primary-dark text-white font-[Poppins] font-bold text-[22px] leading-[1.5] py-4 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full flex items-center justify-center gap-3 bg-[#D41132] hover:bg-primary-dark text-white font-[Poppins] font-bold text-[20px] leading-[1.5] py-3 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
         >
           {isSubmitting ? (
             <>
