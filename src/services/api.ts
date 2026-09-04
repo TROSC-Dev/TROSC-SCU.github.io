@@ -170,6 +170,15 @@ export function getMe(): Promise<{ status: string; data: { user: AuthUser } }> {
   return request("GET", "/users/me");
 }
 
+export function updateMe(payload: {
+  name?: string;
+  photo?: string;
+  bio?: string;
+}): Promise<{ status: string; data: { user: AuthUser } }> {
+  return request("PATCH", "/users/updateMe", payload);
+}
+
+
 // ── User enrollments (protected) ─────────────────────────────
 
 export interface EnrollmentsResponse {
