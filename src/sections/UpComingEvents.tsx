@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import * as api from "../services/api";
 import type { BackendEvent } from "../services/api";
+import { useAuth } from "../context/useAuth";
 
 // ── Countdown (unchanged logic, just moved) ───────────────────
 
@@ -65,9 +66,16 @@ const useCountdown = (targetDate: string): string => {
 // ── Event Card ────────────────────────────────────────────────
 
 const UpcomingEventCard = ({ event }: { event: BackendEvent }) => {
-  const [rsvped, setRsvped] = useState(false);
+  const { user } = useAuth();
+  const [rsvped, setRsvped] = useState(
+    () => !!user && event.attendees.includes(user._id),
+  );
   const [loading, setLoading] = useState(false);
   const countdown = useCountdown(event.date);
+
+  useEffect(() => {
+    setRsvped(!!user && event.attendees.includes(user._id));
+  }, [user, event.attendees]);
 
   const handleRsvp = async () => {
     setLoading(true);

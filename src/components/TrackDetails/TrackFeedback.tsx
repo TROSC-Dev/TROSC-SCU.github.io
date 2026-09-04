@@ -1,43 +1,19 @@
 import { useState } from "react";
-import { Star, CheckCircle } from "lucide-react";
-import * as api from "../../services/api";
+import type { FC } from "react";
+import { Star } from "lucide-react";
+import ComingSoonNotice from "../ComingSoonNotice";
 
 interface TrackFeedbackProps {
   trackId: string;
 }
 
-const TrackFeedback = ({ trackId }: TrackFeedbackProps) => {
+// trackId is accepted for API shape consistency with the parent page, but
+// isn't used yet since feedback submission is disabled until the backend
+// wires up POST /v1/tracks/:id/reviews.
+const TrackFeedback: FC<TrackFeedbackProps> = () => {
   const [text, setText] = useState("");
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async () => {
-    if (!text.trim() || rating === 0) {
-      setError(
-        "Please write your feedback and select a rating before submitting.",
-      );
-      return;
-    }
-    setError(null);
-    setIsSubmitting(true);
-    try {
-      await api.submitTrackFeedback({ trackId, text, rating });
-      setSubmitted(true);
-      setText("");
-      setRating(0);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to submit feedback. Please try again.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <div className="bg-gray-100 rounded-2xl p-6 md:p-8 shadow-sm border border-gray-200">
@@ -50,23 +26,10 @@ const TrackFeedback = ({ trackId }: TrackFeedbackProps) => {
         Tell us what you liked, what was hard, and what you want to learn next.
       </p>
 
-      {submitted && (
-        <div className="flex items-center gap-3 bg-green-50 border border-green-200 text-green-700 rounded-xl px-5 py-4 mb-6">
-          <CheckCircle size={20} className="shrink-0" />
-          <span className="text-sm font-medium">
-            Thank you! Your feedback has been submitted.
-          </span>
-        </div>
-      )}
-
-      {error && (
-        <p
-          role="alert"
-          className="mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-5 py-4"
-        >
-          {error}
-        </p>
-      )}
+      <ComingSoonNotice
+        message="Feedback submission isn't available yet — we're wiring it up on the backend. Feel free to draft your thoughts below in the meantime."
+        className="mb-6"
+      />
 
       <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-start md:items-stretch">
         <div className="flex-1 w-full">
@@ -106,11 +69,11 @@ const TrackFeedback = ({ trackId }: TrackFeedbackProps) => {
 
           <button
             type="button"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3 px-6 rounded-xl transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled
+            title="Coming soon"
+            className="w-full bg-primary text-white font-bold py-3 px-6 rounded-xl shadow-md opacity-50 cursor-not-allowed"
           >
-            {isSubmitting ? "Submitting..." : "Submit"}
+            Submit (Coming soon)
           </button>
         </div>
       </div>

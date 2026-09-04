@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 import TrackCard from "./trackCard";
-import { featuredTracks } from "../data/tracksData";
 import * as api from "../services/api";
 import type { BackendTrack } from "../services/api";
 import type { TrackItem } from "../data/tracksData";
@@ -29,6 +28,19 @@ function mapTrack(t: BackendTrack, index: number): TrackItem {
     description: t.description,
   };
 }
+
+// ── Loading skeleton ──────────────────────────────────────────
+
+const TrackSkeleton = () => (
+  <div className="bg-gray-100 rounded-xl overflow-hidden animate-pulse">
+    <div className="w-full h-48 bg-gray-200" />
+    <div className="p-5 space-y-3">
+      <div className="h-5 bg-gray-200 rounded w-3/4" />
+      <div className="h-4 bg-gray-200 rounded w-full" />
+      <div className="h-4 bg-gray-200 rounded w-5/6" />
+    </div>
+  </div>
+);
 
 // ── All-Tracks Modal ──────────────────────────────────────────
 
@@ -85,11 +97,17 @@ const AllTracksModal = ({
         </div>
 
         <div className="overflow-y-auto p-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tracks.map((track) => (
-              <TrackCard key={track.id} track={track} />
-            ))}
-          </div>
+          {tracks.length === 0 ? (
+            <p className="text-center text-gray-500 py-12">
+              No tracks published yet — check back soon!
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tracks.map((track) => (
+                <TrackCard key={track.id} track={track} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -99,9 +117,9 @@ const AllTracksModal = ({
 // ── Tracks section ────────────────────────────────────────────
 
 const Tracks = () => {
-  const [tracks, setTracks] = useState<TrackItem[]>(featuredTracks);
+  // null = still loading, [] = loaded but empty, [...] = has tracks
+  const [tracks, setTracks] = useState<TrackItem[] | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -109,22 +127,18 @@ const Tracks = () => {
       .getTracks("published=true&limit=20")
       .then((res) => {
         if (cancelled) return;
-        if (res.data.tracks.length > 0) {
-          setTracks(res.data.tracks.map(mapTrack));
-        }
+        setTracks(res.data.tracks.map(mapTrack));
       })
       .catch(() => {
-        // API unavailable — keep the static fallback already in state
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) setTracks([]); // API unavailable — show empty state
       });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const featured = tracks.slice(0, 3);
+  const loading = tracks === null;
+  const featured = (tracks ?? []).slice(0, 3);
 
   return (
     <div className="bg-white px-6 py-16 w-full flex items-center justify-center font-sans">
@@ -136,44 +150,42 @@ const Tracks = () => {
           Our Tracks
         </h2>
 
-        {loading ? (
-          /* Loading skeleton */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {[1, 2, 3].map((n) => (
-              <div
-                key={n}
-                className="bg-gray-100 rounded-xl overflow-hidden animate-pulse"
-              >
-                <div className="w-full h-48 bg-gray-200" />
-                <div className="p-5 space-y-3">
-                  <div className="h-5 bg-gray-200 rounded w-3/4" />
-                  <div className="h-4 bg-gray-200 rounded w-full" />
-                  <div className="h-4 bg-gray-200 rounded w-5/6" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {featured.map((track) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+          {loading ? (
+            // Skeleton while the API request is in-flight
+            [1, 2, 3].map((n) => <TrackSkeleton key={n} />)
+          ) : featured.length === 0 ? (
+            // API returned no published tracks yet
+            <div className="col-span-full text-center py-16 text-gray-500">
+              <p className="text-lg font-medium">No tracks published yet.</p>
+              <p className="text-sm mt-1">
+                Our team is working on it — check back soon!
+              </p>
+            </div>
+          ) : (
+            featured.map((track) => (
               <TrackCard key={track.id} track={track} />
-            ))}
+            ))
+          )}
+        </div>
+
+        {!loading && featured.length > 0 && (
+          <div className="text-center">
+            <button
+              onClick={() => setShowModal(true)}
+              className="py-3 px-10 bg-primary text-white font-semibold rounded-full hover:bg-primary-hover transition-colors duration-300 shadow-md"
+            >
+              See All Tracks
+            </button>
           </div>
         )}
-
-        <div className="text-center">
-          <button
-            onClick={() => setShowModal(true)}
-            disabled={loading}
-            className="py-3 px-10 bg-primary text-white font-semibold rounded-full hover:bg-primary-hover transition-colors duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            See All Tracks
-          </button>
-        </div>
       </div>
 
       {showModal && (
-        <AllTracksModal tracks={tracks} onClose={() => setShowModal(false)} />
+        <AllTracksModal
+          tracks={tracks ?? []}
+          onClose={() => setShowModal(false)}
+        />
       )}
     </div>
   );

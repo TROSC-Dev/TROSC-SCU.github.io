@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import PasswordInput from "./PasswordInput";
 import * as api from "../services/api";
+import { useAuth } from "../context/useAuth";
 
 interface SignUpFormData {
   name: string;
@@ -13,6 +14,7 @@ interface SignUpFormData {
 
 function SignUpForm() {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -25,12 +27,13 @@ function SignUpForm() {
   const onSubmit = async (data: SignUpFormData) => {
     setServerError(null);
     try {
-      await api.signUp({
+      const res = await api.signUp({
         name: data.name,
         email: data.email,
         password: data.password,
         passwordConfirm: data.confirmPassword,
       });
+      setUser(res.data.user);
       navigate("/signin");
     } catch (err) {
       setServerError(

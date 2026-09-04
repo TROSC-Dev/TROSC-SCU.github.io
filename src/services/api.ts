@@ -12,6 +12,16 @@ const API_BASE = import.meta.env.VITE_API_URL
   ? `${String(import.meta.env.VITE_API_URL)}/v1`
   : "/v1";
 
+export class ApiError extends Error {
+  status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 async function request<T = void>(
   method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE",
   path: string,
@@ -26,9 +36,10 @@ async function request<T = void>(
 
   if (!res.ok) {
     const json = await res.json().catch(() => ({}));
-    throw new Error(
+    throw new ApiError(
       (json as { message?: string }).message ??
         `Request failed (${res.status})`,
+      res.status,
     );
   }
 
@@ -67,12 +78,32 @@ export interface BackendTrack {
   courses: string[];
   sessions: string[];
   students: string[];
+  pendingStudents: string[];
+  pendingLeaves: string[];
   level: string;
   coverImage: string;
   published: boolean;
   studentCount: number;
   courseCount: number;
   sessionCount: number;
+  contentCount: { courses: number; sessions: number; total: number };
+}
+
+export interface BackendSession {
+  _id: string;
+  title: string;
+  description?: string;
+  url?: string;
+  embedUrl?: string;
+  instructor: { _id: string; name: string; email: string; role: string };
+  duration?: number;
+  level: string;
+  coverImage: string;
+  resources: { title: string; url: string }[];
+  startDate?: string;
+  endDate?: string;
+  published: boolean;
+  access: string;
 }
 
 export interface BackendEvent {
@@ -139,6 +170,21 @@ export function getMe(): Promise<{ status: string; data: { user: AuthUser } }> {
   return request("GET", "/users/me");
 }
 
+// ── User enrollments (protected) ─────────────────────────────
+
+export interface EnrollmentsResponse {
+  status: string;
+  data: {
+    track: BackendTrack | null;
+    courses: unknown[];
+    sessions: BackendSession[];
+  };
+}
+
+export function getMyEnrollments(): Promise<EnrollmentsResponse> {
+  return request<EnrollmentsResponse>("GET", "/users/me/enrollments");
+}
+
 // ── Tracks (public) ──────────────────────────────────────────
 
 export interface TracksResponse {
@@ -159,6 +205,19 @@ export function getTracks(query?: string): Promise<TracksResponse> {
 
 export function getTrack(id: string): Promise<TrackResponse> {
   return request<TrackResponse>("GET", `/tracks/${id}`);
+}
+
+// ── Sessions (protected) ──────────────────────────────────────
+
+export interface SessionsResponse {
+  status: string;
+  results: number;
+  total: number;
+  data: { sessions: BackendSession[] };
+}
+
+export function getSessionsByTrack(trackId: string): Promise<SessionsResponse> {
+  return request<SessionsResponse>("GET", `/sessions/track/${trackId}`);
 }
 
 // ── Track enrollment (protected) ─────────────────────────────
@@ -207,34 +266,8 @@ export function cancelRsvp(
   return request("DELETE", `/events/${eventId}/rsvp`);
 }
 
-// ── Contact (no backend endpoint yet) ────────────────────────
-
-export interface ContactPayload {
-  username: string;
-  track: string;
-  email: string;
-  phone: string;
-  message: string;
-}
-
-export async function sendContactMessage(
-  _payload: ContactPayload,
-): Promise<void> {
-  // TODO: implement when backend adds POST /v1/contact
-  await Promise.resolve();
-}
-
-// ── Feedback (planned — reviews model not yet implemented) ───
-
-export interface FeedbackPayload {
-  trackId: string;
-  text: string;
-  rating: number;
-}
-
-export async function submitTrackFeedback(
-  _payload: FeedbackPayload,
-): Promise<void> {
-  // TODO: implement when backend adds POST /v1/tracks/:id/reviews
-  await Promise.resolve();
-}
+// ── Contact & feedback ────────────────────────────────────────
+// NOTE: The backend has no POST /v1/contact or POST /v1/tracks/:id/reviews
+// endpoints yet, so there is nothing to call here. ContactUsForm and
+// TrackFeedback show a "coming soon" notice and disable submission until
+// these routes exist. See frontend_backend_gap_analysis.md for details.

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 import { trackData } from "../data/mockTrackData";
 import * as api from "../services/api";
-import type { BackendTrack } from "../services/api";
+import { ApiError } from "../services/api";
+import type { BackendTrack, BackendSession } from "../services/api";
 import TrackHero from "../components/TrackDetails/TrackHero";
 import TrackTabs from "../components/TrackDetails/TrackTabs";
 import TrackOverview from "../components/TrackDetails/TrackOverview";
@@ -16,12 +17,41 @@ import TrackSchedule from "../components/TrackDetails/TrackSchedule";
 import TrackCertificate from "../components/TrackDetails/TrackCertificate";
 import TrackFeedback from "../components/TrackDetails/TrackFeedback";
 import Divider from "../components/Divider";
+import ComingSoonNotice from "../components/ComingSoonNotice";
 
 const BACKEND_PLACEHOLDER = "https://placehold.co/800x400?text=Trosc+Track";
 
+/** Returns true only for valid 24-character hex MongoDB ObjectIds. */
+const isValidObjectId = (id: string) => /^[a-f\d]{24}$/i.test(id);
+
 const TrackDetailsPage = () => {
   const { trackId } = useParams<{ trackId: string }>();
+
+  // Guard: if the URL segment isn't a valid MongoDB ObjectId we know it won't
+  // match anything in the database — show a clear message instead of firing
+  // requests that will always 400/500.
+  if (!trackId || !isValidObjectId(trackId)) {
+    return (
+      <div className="bg-gray-50 min-h-screen pt-16 flex items-center justify-center">
+        <div className="text-center px-4">
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">Track not found</h1>
+          <p className="text-gray-600 mb-6">
+            This track doesn't exist yet or hasn't been published.
+          </p>
+          <Link
+            to="/#tracks"
+            className="inline-block bg-primary text-white font-bold py-2.5 px-6 rounded-xl hover:bg-primary-hover transition-colors"
+          >
+            Browse Tracks
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   const [liveTrack, setLiveTrack] = useState<BackendTrack | null>(null);
+  const [sessions, setSessions] = useState<BackendSession[]>([]);
+  const [sessionsUnauthorized, setSessionsUnauthorized] = useState(false);
 
   useEffect(() => {
     if (!trackId) return;
@@ -39,6 +69,50 @@ const TrackDetailsPage = () => {
     };
   }, [trackId]);
 
+  useEffect(() => {
+    if (!trackId) return;
+    let cancelled = false;
+    api
+      .getSessionsByTrack(trackId)
+      .then((res) => {
+        if (!cancelled) setSessions(res.data.sessions);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        // The sessions routes require auth on the backend — treat 401s as
+        // "sign in to view sessions" rather than a hard error.
+        if (err instanceof ApiError && err.status === 401) {
+          setSessionsUnauthorized(true);
+        }
+        setSessions([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [trackId]);
+
+  // Sort sessions chronologically (soonest first) for display + scheduling.
+  const sortedSessions = useMemo(() => {
+    return [...sessions].sort((a, b) => {
+      const aTime = a.startDate ? new Date(a.startDate).getTime() : Infinity;
+      const bTime = b.startDate ? new Date(b.startDate).getTime() : Infinity;
+      return aTime - bTime;
+    });
+  }, [sessions]);
+
+  const nextSessionLabel = useMemo(() => {
+    const now = Date.now();
+    const upcoming = sortedSessions.find(
+      (s) => s.startDate && new Date(s.startDate).getTime() > now,
+    );
+    return upcoming?.startDate
+      ? new Date(upcoming.startDate).toLocaleString(undefined, {
+          dateStyle: "medium",
+          timeStyle: "short",
+        })
+      : trackData.scheduleSummary.nextSession;
+  }, [sortedSessions]);
+
   // Resolve hero data: prefer live API, fall back to mock
   const heroTitle = liveTrack?.title ?? trackData.title;
   const heroSubtitle = liveTrack?.description ?? trackData.subtitle;
@@ -46,6 +120,11 @@ const TrackDetailsPage = () => {
     liveTrack && liveTrack.coverImage !== BACKEND_PLACEHOLDER
       ? liveTrack.coverImage
       : trackData.image;
+
+  const scheduleSummary = {
+    ...trackData.scheduleSummary,
+    nextSession: nextSessionLabel,
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen pb-20 pt-16">
@@ -73,7 +152,13 @@ const TrackDetailsPage = () => {
         </div>
       </div>
 
-      <TrackHero title={heroTitle} subtitle={heroSubtitle} image={heroImage} />
+      <TrackHero
+        title={heroTitle}
+        subtitle={heroSubtitle}
+        image={heroImage}
+        level={liveTrack?.level}
+        studentCount={liveTrack?.studentCount}
+      />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <TrackTabs />
@@ -82,31 +167,48 @@ const TrackDetailsPage = () => {
           <section id="overview" className="scroll-mt-32">
             <TrackOverview
               trackId={trackId ?? ""}
+              track={liveTrack}
               overview={trackData.overview}
-              scheduleSummary={trackData.scheduleSummary}
+              scheduleSummary={scheduleSummary}
               resourcesSummary={trackData.resourcesSummary}
             />
             <div className="py-4">
               <Divider />
             </div>
-            <TrackSessionsSummary sessions={trackData.sessionsSummary} />
+            {sessionsUnauthorized ? (
+              <ComingSoonNotice message="Sign in to view this track's sessions." />
+            ) : (
+              <TrackSessionsSummary sessions={sortedSessions.slice(0, 3)} />
+            )}
           </section>
 
           <Divider />
 
           <section id="weekly-tasks" className="scroll-mt-32">
+            <ComingSoonNotice
+              message="Weekly tasks aren't tracked by the backend yet — the items below are illustrative examples only."
+              className="mb-6"
+            />
             <TrackWeeklyTasks tasks={trackData.weeklyTasks} />
           </section>
 
           <Divider />
 
           <section id="sessions" className="scroll-mt-32">
-            <TrackSessionsTable sessions={trackData.sessions} />
+            {sessionsUnauthorized ? (
+              <ComingSoonNotice message="Sign in to view this track's sessions." />
+            ) : (
+              <TrackSessionsTable sessions={sortedSessions} />
+            )}
           </section>
 
           <Divider />
 
           <section id="assignments" className="scroll-mt-32">
+            <ComingSoonNotice
+              message="Assignments aren't wired up on the backend yet — the items below are illustrative examples only."
+              className="mb-6"
+            />
             <TrackAssignments assignments={trackData.assignments} />
             <TrackLearningPath path={trackData.learningPath} />
           </section>

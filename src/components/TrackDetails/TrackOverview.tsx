@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { Calendar, BookOpen } from "lucide-react";
+import { Calendar, BookOpen, GraduationCap, BarChart3, Users, Layers } from "lucide-react";
 import * as api from "../../services/api";
+import type { BackendTrack } from "../../services/api";
+import { useAuth } from "../../context/useAuth";
+import { Link } from "react-router-dom";
 
 interface ScheduleSummary {
   nextSession: string;
@@ -10,6 +13,7 @@ interface ScheduleSummary {
 
 interface TrackOverviewProps {
   trackId: string;
+  track: BackendTrack | null;
   overview: string;
   scheduleSummary: ScheduleSummary;
   resourcesSummary: string[];
@@ -17,10 +21,12 @@ interface TrackOverviewProps {
 
 const TrackOverview = ({
   trackId,
+  track,
   overview,
   scheduleSummary,
   resourcesSummary,
 }: TrackOverviewProps) => {
+  const { user, loading: authLoading } = useAuth();
   const [enrolling, setEnrolling] = useState(false);
   const [enrollMsg, setEnrollMsg] = useState<{
     text: string;
@@ -47,6 +53,73 @@ const TrackOverview = ({
     }
   };
 
+  const isEnrolled = !!user && user.enrolledTrack === trackId;
+  const isPending = !!user && !!track?.pendingStudents?.includes(user._id);
+
+  const renderEnrollAction = () => {
+    if (enrollMsg) {
+      return (
+        <div
+          className={`rounded-xl px-4 py-3 text-sm font-medium ${
+            enrollMsg.ok
+              ? "bg-green-50 text-green-700 border border-green-200"
+              : "bg-red-50 text-red-700 border border-red-200"
+          }`}
+        >
+          {enrollMsg.text}
+        </div>
+      );
+    }
+
+    if (authLoading) {
+      return (
+        <button
+          disabled
+          className="w-full bg-gray-200 text-gray-500 font-bold py-3 px-4 rounded-xl cursor-not-allowed"
+        >
+          Loading...
+        </button>
+      );
+    }
+
+    if (!user) {
+      return (
+        <Link
+          to="/signin"
+          className="block w-full text-center bg-primary hover:bg-primary-hover text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-md"
+        >
+          Sign in to enroll
+        </Link>
+      );
+    }
+
+    if (isEnrolled) {
+      return (
+        <div className="rounded-xl px-4 py-3 text-sm font-semibold bg-green-50 text-green-700 border border-green-200 text-center">
+          You are enrolled ✓
+        </div>
+      );
+    }
+
+    if (isPending) {
+      return (
+        <div className="rounded-xl px-4 py-3 text-sm font-semibold bg-yellow-50 text-yellow-700 border border-yellow-200 text-center">
+          Pending approval
+        </div>
+      );
+    }
+
+    return (
+      <button
+        onClick={handleEnroll}
+        disabled={enrolling}
+        className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {enrolling ? "Submitting..." : "Join the Track"}
+      </button>
+    );
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-4">
       <div className="md:col-span-2">
@@ -55,24 +128,33 @@ const TrackOverview = ({
       </div>
 
       <div className="space-y-6">
-        {enrollMsg ? (
-          <div
-            className={`rounded-xl px-4 py-3 text-sm font-medium ${
-              enrollMsg.ok
-                ? "bg-green-50 text-green-700 border border-green-200"
-                : "bg-red-50 text-red-700 border border-red-200"
-            }`}
-          >
-            {enrollMsg.text}
+        {renderEnrollAction()}
+
+        {track && (
+          <div className="bg-gray-100 rounded-xl p-5 border border-gray-200">
+            <h3 className="text-lg font-bold flex items-center gap-2 mb-4">
+              <GraduationCap className="w-5 h-5 text-gray-700" />
+              Track Info
+            </h3>
+            <ul className="space-y-3 text-sm text-gray-800">
+              <li className="flex items-center gap-2">
+                <GraduationCap className="w-4 h-4 text-primary shrink-0" />
+                <span>Instructor: {track.instructor?.name ?? "TBA"}</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-primary shrink-0" />
+                <span className="capitalize">Level: {track.level}</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Layers className="w-4 h-4 text-primary shrink-0" />
+                <span>Courses: {track.courseCount}</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Users className="w-4 h-4 text-primary shrink-0" />
+                <span>Students enrolled: {track.studentCount}</span>
+              </li>
+            </ul>
           </div>
-        ) : (
-          <button
-            onClick={handleEnroll}
-            disabled={enrolling}
-            className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {enrolling ? "Submitting..." : "Join the Track"}
-          </button>
         )}
 
         <div className="bg-gray-100 rounded-xl p-5 border border-gray-200">

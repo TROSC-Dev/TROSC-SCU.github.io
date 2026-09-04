@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, UserCircle } from "lucide-react";
 import TroscLogo from "../../Assests/TroscLogoRed.webp";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { smoothScrollToId } from "../utils/smoothScroll";
+import { useAuth } from "../context/useAuth";
 
 type NavLink = {
   name: string;
@@ -14,6 +15,13 @@ const Navbar: React.FC = () => {
   const [activeLink, setActiveLink] = useState<string>("/#home");
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, loading, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    setIsOpen(false);
+    navigate("/");
+  };
 
   useEffect(() => {
     if (location.pathname !== "/") {
@@ -126,12 +134,28 @@ const Navbar: React.FC = () => {
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <Link
-              to="/signin"
-              className="inline-block bg-primary text-white font-bold text-base py-2.5 px-2.5 rounded-md hover:bg-primary-hover transition-colors duration-300 shadow-lg cursor-pointer"
-            >
-              Log In
-            </Link>
+            {!loading && user ? (
+              <div className="hidden sm:flex items-center gap-3">
+                <span className="flex items-center gap-1.5 text-sm font-semibold text-gray-800">
+                  <UserCircle size={20} className="text-primary" />
+                  {user.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-800 font-bold text-sm py-2.5 px-3 rounded-md hover:bg-gray-200 transition-colors duration-300 cursor-pointer"
+                >
+                  <LogOut size={16} />
+                  Log Out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/signin"
+                className="inline-block bg-primary text-white font-bold text-base py-2.5 px-2.5 rounded-md hover:bg-primary-hover transition-colors duration-300 shadow-lg cursor-pointer"
+              >
+                Log In
+              </Link>
+            )}
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="md:hidden text-gray-600 hover:text-gray-900 transition-colors duration-300"
@@ -162,6 +186,21 @@ const Navbar: React.FC = () => {
               {link.name}
             </Link>
           ))}
+          {!loading && user && (
+            <div className="flex items-center justify-between px-3 py-2">
+              <span className="flex items-center gap-1.5 text-sm font-semibold text-gray-800">
+                <UserCircle size={20} className="text-primary" />
+                {user.name}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-800 font-bold text-sm py-2 px-3 rounded-md hover:bg-gray-200 transition-colors duration-300 cursor-pointer"
+              >
+                <LogOut size={16} />
+                Log Out
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>

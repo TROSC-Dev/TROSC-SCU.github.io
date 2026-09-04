@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import PasswordInput from "./PasswordInput";
 import * as api from "../services/api";
+import { useAuth } from "../context/useAuth";
 
 interface SignInFormData {
   email: string;
@@ -12,6 +13,7 @@ interface SignInFormData {
 
 function SignInForm() {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -23,7 +25,11 @@ function SignInForm() {
   const onSubmit = async (data: SignInFormData) => {
     setServerError(null);
     try {
-      await api.signIn({ email: data.email, password: data.password });
+      const res = await api.signIn({
+        email: data.email,
+        password: data.password,
+      });
+      setUser(res.data.user);
       navigate("/");
     } catch (err) {
       setServerError(
@@ -154,21 +160,27 @@ function SignInForm() {
         <div className="flex-1 h-px bg-neutral-light-active"></div>
       </div>
 
-      {/* OAuth Buttons */}
+      {/* OAuth Buttons (not yet supported by the backend) */}
       <div className="flex flex-col gap-3">
         <button
           type="button"
-          className="w-full py-3 border-2 border-neutral-light-active rounded-full text-neutral-darker font-semibold hover:bg-neutral-light-hover transition-colors flex items-center justify-center gap-2"
+          disabled
+          title="Coming soon"
+          aria-disabled="true"
+          className="w-full py-3 border-2 border-neutral-light-active rounded-full text-neutral-dark font-semibold flex items-center justify-center gap-2 opacity-50 cursor-not-allowed"
         >
           <span>🔍</span>
-          Sign in with Google
+          Sign in with Google (Coming soon)
         </button>
         <button
           type="button"
-          className="w-full py-3 border-2 border-neutral-light-active rounded-full text-neutral-darker font-semibold hover:bg-neutral-light-hover transition-colors flex items-center justify-center gap-2"
+          disabled
+          title="Coming soon"
+          aria-disabled="true"
+          className="w-full py-3 border-2 border-neutral-light-active rounded-full text-neutral-dark font-semibold flex items-center justify-center gap-2 opacity-50 cursor-not-allowed"
         >
           <span>f</span>
-          Sign in with Facebook
+          Sign in with Facebook (Coming soon)
         </button>
       </div>
     </div>

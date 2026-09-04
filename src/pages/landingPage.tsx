@@ -3,6 +3,7 @@ import Divider from "../components/Divider";
 import Tracks from "../sections/Tracks";
 import Events from "../sections/Events";
 import UpcomingEvents from "../sections/UpComingEvents";
+import MyEnrollments from "../sections/MyEnrollments";
 
 function LandingPage() {
   return (
@@ -10,6 +11,7 @@ function LandingPage() {
       <section id="home">
         <WhoWeAre />
       </section>
+      <MyEnrollments />
       <Divider />
       <section id="tracks">
         <Tracks />

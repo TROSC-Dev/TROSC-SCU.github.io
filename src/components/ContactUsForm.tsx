@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Send, CheckCircle } from "lucide-react";
-import * as api from "../services/api";
+import { Send } from "lucide-react";
+import ComingSoonNotice from "./ComingSoonNotice";
 
 type ContactFormInputs = {
   username: string;
@@ -12,30 +11,16 @@ type ContactFormInputs = {
 };
 
 const ContactUsForm = () => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
-
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
+    formState: { errors },
   } = useForm<ContactFormInputs>();
 
-  const onSubmit = async (data: ContactFormInputs) => {
-    setServerError(null);
-    try {
-      await api.sendContactMessage(data);
-      setIsSubmitted(true);
-      reset();
-      setTimeout(() => setIsSubmitted(false), 4000);
-    } catch (err) {
-      setServerError(
-        err instanceof Error
-          ? err.message
-          : "Failed to send message. Please try again.",
-      );
-    }
+  // The backend has no POST /v1/contact endpoint yet — submission is
+  // disabled until that's wired up. See frontend_backend_gap_analysis.md.
+  const onSubmit = () => {
+    // no-op: submission disabled until backend support lands
   };
 
   const inputBase =
@@ -52,25 +37,10 @@ const ContactUsForm = () => {
         Let's get in touch
       </p>
 
-      {isSubmitted && (
-        <div className="flex items-center gap-3 bg-green-50 border border-green-200 text-green-700 rounded-2xl px-5 py-4 mb-6 animate-fadeIn">
-          <CheckCircle size={20} className="shrink-0" />
-          <span className="font-[Poppins] text-sm font-medium">
-            Your message was sent! We'll get back to you soon.
-          </span>
-        </div>
-      )}
-
-      {serverError && (
-        <div
-          role="alert"
-          className="mb-6 px-5 py-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl"
-        >
-          <span className="font-[Poppins] text-sm font-medium">
-            {serverError}
-          </span>
-        </div>
-      )}
+      <ComingSoonNotice
+        message="Contact form submission isn't available yet — we're wiring it up on the backend. Please reach us via phone or email in the meantime."
+        className="mb-6"
+      />
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
         <div>
@@ -198,21 +168,13 @@ const ContactUsForm = () => {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled
+          title="Coming soon"
           id="contact-submit-btn"
-          className="w-full flex items-center justify-center gap-3 bg-[#D41132] hover:bg-primary-dark text-white font-[Poppins] font-bold text-[20px] leading-[1.5] py-3 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+          className="w-full flex items-center justify-center gap-3 bg-[#D41132] text-white font-[Poppins] font-bold text-[20px] leading-[1.5] py-3 rounded-2xl opacity-50 cursor-not-allowed"
         >
-          {isSubmitting ? (
-            <>
-              <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Sending…
-            </>
-          ) : (
-            <>
-              <Send size={20} />
-              Send Message
-            </>
-          )}
+          <Send size={20} />
+          Send Message (Coming soon)
         </button>
       </form>
     </div>
