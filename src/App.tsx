@@ -10,6 +10,8 @@ import ForgotPasswordPage from "./pages/forgotPasswordPage";
 import ResetPasswordPage from "./pages/resetPasswordPage";
 import ContactUsPage from "./pages/contactUsPage";
 import TrackDetailsPage from "./pages/TrackDetailsPage";
+import DashboardPage from "./pages/DashboardPage";
+import ProtectedRoute from "./components/ProtectedRoute";
 import useScrollToHash from "./hooks/useScrollToHash";
 
 function App() {
@@ -26,6 +28,14 @@ function App() {
       {/* Pages with Navbar only (no Footer) */}
       <Route element={<MainLayoutNoFooter />}>
         <Route path="/contact" element={<ContactUsPage />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       <Route path="/signin" element={<SignInPage />} />

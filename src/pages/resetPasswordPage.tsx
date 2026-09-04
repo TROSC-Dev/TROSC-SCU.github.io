@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import AuthLayout from '../layout/AuthLayout';
 import ResetPasswordForm from '../components/ResetPasswordForm';
 import TroscLogo from '../../Assests/TroscLogoRed.webp';
@@ -8,12 +8,10 @@ import * as api from '../services/api';
 const ResetPasswordPage = () => {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
-  const [serverError, setServerError] = useState<string | null>(null);
 
   const handleSubmit = async (data: { newPassword: string; confirmPassword: string }) => {
-    setServerError(null);
     if (!token) {
-      setServerError('Invalid or missing reset token. Please request a new link.');
+      toast.error('Invalid or missing reset token. Please request a new link.');
       return;
     }
     try {
@@ -22,9 +20,10 @@ const ResetPasswordPage = () => {
         password: data.newPassword,
         passwordConfirm: data.confirmPassword,
       });
+      toast.success('Password reset successfully. Please sign in.');
       navigate('/signin');
     } catch (err) {
-      setServerError(
+      toast.error(
         err instanceof Error ? err.message : 'Failed to reset password. Please try again.',
       );
     }
@@ -32,7 +31,7 @@ const ResetPasswordPage = () => {
 
   return (
     <AuthLayout logo={TroscLogo}>
-      <ResetPasswordForm onSubmit={handleSubmit} serverError={serverError} />
+      <ResetPasswordForm onSubmit={handleSubmit} />
     </AuthLayout>
   );
 };

@@ -4,20 +4,19 @@ import ForgotPasswordForm from "../components/ForgotPasswordForm";
 import TroscLogo from "../../Assests/TroscLogoRed.webp";
 import * as api from "../services/api";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const ForgotPasswordPage = () => {
   const [sent, setSent] = useState(false);
   const [sentTo, setSentTo] = useState("");
-  const [serverError, setServerError] = useState<string | null>(null);
 
   const handleSubmit = async (data: { email: string }) => {
-    setServerError(null);
     try {
       await api.forgotPassword(data);
       setSentTo(data.email);
       setSent(true);
     } catch (err) {
-      setServerError(
+      toast.error(
         err instanceof Error
           ? err.message
           : "Failed to send reset link. Please try again.",
@@ -46,7 +45,7 @@ const ForgotPasswordPage = () => {
           </Link>
         </div>
       ) : (
-        <ForgotPasswordForm onSubmit={handleSubmit} serverError={serverError} />
+        <ForgotPasswordForm onSubmit={handleSubmit} />
       )}
     </AuthLayout>
   );

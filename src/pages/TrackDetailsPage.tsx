@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { trackData } from "../data/mockTrackData";
 import * as api from "../services/api";
 import { ApiError } from "../services/api";
 import type { BackendTrack, BackendSession } from "../services/api";
@@ -62,7 +61,7 @@ const TrackDetailsPage = () => {
         if (!cancelled) setLiveTrack(res.data.track);
       })
       .catch(() => {
-        // Invalid ID or network error — hero falls back to mock data below
+        // Invalid ID or network error — hero falls back to placeholders below
       });
     return () => {
       cancelled = true;
@@ -110,20 +109,22 @@ const TrackDetailsPage = () => {
           dateStyle: "medium",
           timeStyle: "short",
         })
-      : trackData.scheduleSummary.nextSession;
+      : "TBA";
   }, [sortedSessions]);
 
-  // Resolve hero data: prefer live API, fall back to mock
-  const heroTitle = liveTrack?.title ?? trackData.title;
-  const heroSubtitle = liveTrack?.description ?? trackData.subtitle;
+  // Resolve hero data from the live API; fall back to generic placeholders
+  // while the request is in-flight or if it fails.
+  const heroTitle = liveTrack?.title ?? "Track";
+  const heroSubtitle = liveTrack?.description ?? "";
   const heroImage =
     liveTrack && liveTrack.coverImage !== BACKEND_PLACEHOLDER
       ? liveTrack.coverImage
-      : trackData.image;
+      : BACKEND_PLACEHOLDER;
 
   const scheduleSummary = {
-    ...trackData.scheduleSummary,
     nextSession: nextSessionLabel,
+    projectDeadline: "TBA",
+    finalExam: "TBA",
   };
 
   return (
@@ -168,9 +169,9 @@ const TrackDetailsPage = () => {
             <TrackOverview
               trackId={trackId ?? ""}
               track={liveTrack}
-              overview={trackData.overview}
+              overview={heroSubtitle || "No overview available yet."}
               scheduleSummary={scheduleSummary}
-              resourcesSummary={trackData.resourcesSummary}
+              resourcesSummary={[]}
             />
             <div className="py-4">
               <Divider />
@@ -186,10 +187,10 @@ const TrackDetailsPage = () => {
 
           <section id="weekly-tasks" className="scroll-mt-32">
             <ComingSoonNotice
-              message="Weekly tasks aren't tracked by the backend yet — the items below are illustrative examples only."
+              message="Weekly tasks aren't tracked by the backend yet."
               className="mb-6"
             />
-            <TrackWeeklyTasks tasks={trackData.weeklyTasks} />
+            <TrackWeeklyTasks tasks={[]} />
           </section>
 
           <Divider />
@@ -206,22 +207,39 @@ const TrackDetailsPage = () => {
 
           <section id="assignments" className="scroll-mt-32">
             <ComingSoonNotice
-              message="Assignments aren't wired up on the backend yet — the items below are illustrative examples only."
+              message="Assignments aren't wired up on the backend yet."
               className="mb-6"
             />
-            <TrackAssignments assignments={trackData.assignments} />
-            <TrackLearningPath path={trackData.learningPath} />
+            <TrackAssignments assignments={[]} />
+            <TrackLearningPath path={[]} />
           </section>
 
           <Divider />
 
           <section id="resources" className="scroll-mt-32">
-            <TrackResources resources={trackData.resources} />
+            <ComingSoonNotice
+              message="Track resources aren't available on the backend yet."
+              className="mb-6"
+            />
+            <TrackResources resources={{ pdfs: [], recordings: [] }} />
           </section>
 
           <section id="schedule" className="scroll-mt-32">
-            <TrackSchedule upcoming={trackData.upcomingSessions} />
-            <TrackCertificate certificate={trackData.certificate} />
+            <ComingSoonNotice
+              message="A full schedule view isn't available yet."
+              className="mb-6"
+            />
+            <TrackSchedule upcoming={[]} />
+            <TrackCertificate
+              certificate={{
+                includes: [
+                  "Your Name",
+                  "Completion Date",
+                  "Skill Level Achieved",
+                  "Instructor Signature",
+                ],
+              }}
+            />
           </section>
 
           <section id="feedback" className="scroll-mt-32">

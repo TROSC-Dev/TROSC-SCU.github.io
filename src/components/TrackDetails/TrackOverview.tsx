@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Calendar, BookOpen, GraduationCap, BarChart3, Users, Layers } from "lucide-react";
+import toast from "react-hot-toast";
 import * as api from "../../services/api";
 import type { BackendTrack } from "../../services/api";
 import { useAuth } from "../../context/useAuth";
@@ -28,26 +29,21 @@ const TrackOverview = ({
 }: TrackOverviewProps) => {
   const { user, loading: authLoading } = useAuth();
   const [enrolling, setEnrolling] = useState(false);
-  const [enrollMsg, setEnrollMsg] = useState<{
-    text: string;
-    ok: boolean;
-  } | null>(null);
+  const [enrolled, setEnrolled] = useState(false);
 
   const handleEnroll = async () => {
     if (!trackId) return;
     setEnrolling(true);
-    setEnrollMsg(null);
     try {
       const res = await api.enrollInTrack(trackId);
-      setEnrollMsg({ text: res.message, ok: true });
+      toast.success(res.message);
+      setEnrolled(true);
     } catch (err) {
-      setEnrollMsg({
-        text:
-          err instanceof Error
-            ? err.message
-            : "Failed to enroll. Please try again.",
-        ok: false,
-      });
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : "Failed to enroll. Please try again.",
+      );
     } finally {
       setEnrolling(false);
     }
@@ -57,16 +53,10 @@ const TrackOverview = ({
   const isPending = !!user && !!track?.pendingStudents?.includes(user._id);
 
   const renderEnrollAction = () => {
-    if (enrollMsg) {
+    if (enrolled) {
       return (
-        <div
-          className={`rounded-xl px-4 py-3 text-sm font-medium ${
-            enrollMsg.ok
-              ? "bg-green-50 text-green-700 border border-green-200"
-              : "bg-red-50 text-red-700 border border-red-200"
-          }`}
-        >
-          {enrollMsg.text}
+        <div className="rounded-xl px-4 py-3 text-sm font-semibold bg-green-50 text-green-700 border border-green-200 text-center">
+          Enrollment request submitted ✓
         </div>
       );
     }

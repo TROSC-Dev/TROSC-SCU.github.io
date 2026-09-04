@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import * as api from "../services/api";
 import type { BackendEvent } from "../services/api";
 import { useAuth } from "../context/useAuth";
+import { ApiError } from "../services/api";
 
 // ── Countdown (unchanged logic, just moved) ───────────────────
 
@@ -83,13 +85,18 @@ const UpcomingEventCard = ({ event }: { event: BackendEvent }) => {
       if (rsvped) {
         await api.cancelRsvp(event._id);
         setRsvped(false);
+        toast.success("RSVP cancelled.");
       } else {
         await api.rsvpEvent(event._id);
         setRsvped(true);
+        toast.success("You're registered for this event!");
       }
-    } catch {
-      // If the user isn't logged in, the 401 will be thrown here — silently ignore
-      // (the button remains in its pre-click state)
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        toast.error("Sign in to RSVP for events.");
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

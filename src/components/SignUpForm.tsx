@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import PasswordInput from "./PasswordInput";
 import * as api from "../services/api";
 import { useAuth } from "../context/useAuth";
@@ -15,7 +15,6 @@ interface SignUpFormData {
 function SignUpForm() {
   const navigate = useNavigate();
   const { setUser } = useAuth();
-  const [serverError, setServerError] = useState<string | null>(null);
 
   const {
     register,
@@ -25,7 +24,6 @@ function SignUpForm() {
   } = useForm<SignUpFormData>();
 
   const onSubmit = async (data: SignUpFormData) => {
-    setServerError(null);
     try {
       const res = await api.signUp({
         name: data.name,
@@ -34,9 +32,10 @@ function SignUpForm() {
         passwordConfirm: data.confirmPassword,
       });
       setUser(res.data.user);
+      toast.success("Account created! Please sign in.");
       navigate("/signin");
     } catch (err) {
-      setServerError(
+      toast.error(
         err instanceof Error
           ? err.message
           : "Sign up failed. Please try again.",
@@ -49,15 +48,6 @@ function SignUpForm() {
       <h1 className="text-4xl font-bold text-neutral-darker text-center mb-8">
         Sign Up
       </h1>
-
-      {serverError && (
-        <p
-          role="alert"
-          className="mb-4 text-sm text-red-600 text-center bg-red-50 rounded-xl px-4 py-2"
-        >
-          {serverError}
-        </p>
-      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         {/* Full Name Field */}

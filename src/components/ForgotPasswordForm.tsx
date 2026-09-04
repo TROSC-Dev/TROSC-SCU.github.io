@@ -7,13 +7,9 @@ interface ForgotPasswordData {
 
 interface ForgotPasswordFormProps {
   onSubmit: (data: ForgotPasswordData) => Promise<void>;
-  serverError?: string | null;
 }
 
-const ForgotPasswordForm = ({
-  onSubmit,
-  serverError,
-}: ForgotPasswordFormProps) => {
+const ForgotPasswordForm = ({ onSubmit }: ForgotPasswordFormProps) => {
   const {
     register,
     handleSubmit,
@@ -32,15 +28,6 @@ const ForgotPasswordForm = ({
       <p className="text-center text-neutral-dark mb-8 text-sm">
         Enter your email and we'll send you a reset link.
       </p>
-
-      {serverError && (
-        <p
-          role="alert"
-          className="mb-4 text-sm text-red-600 text-center bg-red-50 rounded-xl px-4 py-2"
-        >
-          {serverError}
-        </p>
-      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">

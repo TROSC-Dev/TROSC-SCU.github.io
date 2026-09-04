@@ -9,13 +9,9 @@ interface ResetPasswordData {
 
 interface ResetPasswordFormProps {
   onSubmit: (data: ResetPasswordData) => Promise<void>;
-  serverError?: string | null;
 }
 
-const ResetPasswordForm = ({
-  onSubmit,
-  serverError,
-}: ResetPasswordFormProps) => {
+const ResetPasswordForm = ({ onSubmit }: ResetPasswordFormProps) => {
   const {
     register,
     handleSubmit,
@@ -36,15 +32,6 @@ const ResetPasswordForm = ({
       <p className="text-center text-neutral-dark mb-8 text-sm">
         Create your new Password
       </p>
-
-      {serverError && (
-        <p
-          role="alert"
-          className="mb-4 text-sm text-red-600 text-center bg-red-50 rounded-xl px-4 py-2"
-        >
-          {serverError}
-        </p>
-      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         {/* New Password Field */}

@@ -136,10 +136,13 @@ const Navbar: React.FC = () => {
           <div className="flex items-center gap-3">
             {!loading && user ? (
               <div className="hidden sm:flex items-center gap-3">
-                <span className="flex items-center gap-1.5 text-sm font-semibold text-gray-800">
+                <Link
+                  to="/dashboard"
+                  className="flex items-center gap-1.5 text-sm font-semibold text-gray-800 hover:text-primary transition-colors"
+                >
                   <UserCircle size={20} className="text-primary" />
                   {user.name}
-                </span>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-800 font-bold text-sm py-2.5 px-3 rounded-md hover:bg-gray-200 transition-colors duration-300 cursor-pointer"
@@ -188,10 +191,14 @@ const Navbar: React.FC = () => {
           ))}
           {!loading && user && (
             <div className="flex items-center justify-between px-3 py-2">
-              <span className="flex items-center gap-1.5 text-sm font-semibold text-gray-800">
+              <Link
+                to="/dashboard"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-1.5 text-sm font-semibold text-gray-800 hover:text-primary transition-colors"
+              >
                 <UserCircle size={20} className="text-primary" />
                 {user.name}
-              </span>
+              </Link>
               <button
                 onClick={handleLogout}
                 className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-800 font-bold text-sm py-2 px-3 rounded-md hover:bg-gray-200 transition-colors duration-300 cursor-pointer"

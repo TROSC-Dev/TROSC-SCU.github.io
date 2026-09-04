@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import PasswordInput from "./PasswordInput";
 import * as api from "../services/api";
 import { useAuth } from "../context/useAuth";
@@ -14,7 +14,6 @@ interface SignInFormData {
 function SignInForm() {
   const navigate = useNavigate();
   const { setUser } = useAuth();
-  const [serverError, setServerError] = useState<string | null>(null);
 
   const {
     register,
@@ -23,16 +22,16 @@ function SignInForm() {
   } = useForm<SignInFormData>();
 
   const onSubmit = async (data: SignInFormData) => {
-    setServerError(null);
     try {
       const res = await api.signIn({
         email: data.email,
         password: data.password,
       });
       setUser(res.data.user);
+      toast.success(`Welcome back, ${res.data.user.name}!`);
       navigate("/");
     } catch (err) {
-      setServerError(
+      toast.error(
         err instanceof Error
           ? err.message
           : "Sign in failed. Please try again.",
@@ -45,15 +44,6 @@ function SignInForm() {
       <h1 className="text-4xl font-bold text-neutral-darker text-center mb-8">
         Sign In
       </h1>
-
-      {serverError && (
-        <p
-          role="alert"
-          className="mb-4 text-sm text-red-600 text-center bg-red-50 rounded-xl px-4 py-2"
-        >
-          {serverError}
-        </p>
-      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         {/* Email Field */}
@@ -153,36 +143,6 @@ function SignInForm() {
         </Link>
       </div>
 
-      {/* Divider */}
-      <div className="flex items-center gap-4 my-8">
-        <div className="flex-1 h-px bg-neutral-light-active"></div>
-        <span className="text-sm text-neutral-dark font-medium">OR</span>
-        <div className="flex-1 h-px bg-neutral-light-active"></div>
-      </div>
-
-      {/* OAuth Buttons (not yet supported by the backend) */}
-      <div className="flex flex-col gap-3">
-        <button
-          type="button"
-          disabled
-          title="Coming soon"
-          aria-disabled="true"
-          className="w-full py-3 border-2 border-neutral-light-active rounded-full text-neutral-dark font-semibold flex items-center justify-center gap-2 opacity-50 cursor-not-allowed"
-        >
-          <span>🔍</span>
-          Sign in with Google (Coming soon)
-        </button>
-        <button
-          type="button"
-          disabled
-          title="Coming soon"
-          aria-disabled="true"
-          className="w-full py-3 border-2 border-neutral-light-active rounded-full text-neutral-dark font-semibold flex items-center justify-center gap-2 opacity-50 cursor-not-allowed"
-        >
-          <span>f</span>
-          Sign in with Facebook (Coming soon)
-        </button>
-      </div>
     </div>
   );
 }
